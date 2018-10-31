@@ -85,7 +85,7 @@ public class MyIndexSearcher {
 
     public void parseQuery() throws IOException {
         String appendedString = "";
-        File file = new File("../assignment-2/sample_query.txt");
+        File file = new File("../assignment-2/CS7IS3-Assignment2-Topics");
         BufferedReader br = new BufferedReader(new FileReader(file));
         String str = "";
         String[] tagArray = {"narr", "desc", "title", "num"};
@@ -133,8 +133,6 @@ public class MyIndexSearcher {
                 stringBuilder = stringBuilder.append(str + " ");
             }
 
-            //no more documents => must deal with data from previous (last) document
-
 
         }
 
@@ -143,74 +141,6 @@ public class MyIndexSearcher {
     }
 
 
-    public void queryFileParser() throws IOException {
-        File file = new File("../lucene_assignment/src/main/java/com/alannaogrady/cran.qry");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String str = "";
-        String tag = "";
-        String prevTag = "";
-        String queryWords = "";
-        Boolean firstRun = true;
-        String appendedString = "";
 
-
-        StringBuilder stringBuilder = new StringBuilder();
-        while ((str = br.readLine()) != null){
-            tag = str.length() < 2 ? str : str.substring(0, 2);
-
-            appendedString = stringBuilder.toString();
-            //does beginning of line start with a tag
-            if (tag.equals(".I") || tag.equals(".W")) {
-
-                //remove tag from the rest of the string
-                str = str.substring(2);
-                //check the previous tag and add the appended string as its value
-                //checkPrevTag(prevTag, stringBuilder);
-                if (prevTag.equals(".I")) {
-                    if (!firstRun) {
-                        //do stuff with data gathered from previous document
-                        //queries.add(queryWords);
-                        //reinitialise
-                        queryWords = "";
-                    }
-                    firstRun = false;
-                    appendedString = appendedString.replaceAll(" ","");
-                    stringBuilder.setLength(0);
-                }
-                else if (prevTag.equals(".W")) {
-                    queryWords += " " + appendedString;
-                    stringBuilder.setLength(0);
-                }
-
-                //must append the rest of the line that the tag is on
-                stringBuilder = stringBuilder.append(str + " ");
-
-                //update prevTag
-                prevTag = tag;
-            }
-            else {
-                //not the tag, therefore must append this line to the string (value of tag)
-                stringBuilder = stringBuilder.append(str + " ");
-            }
-
-            //no more documents => must deal with data from previous (last) document
-
-
-        }
-        //must deal with last section
-        //must check what the last tag was
-        if (prevTag.equals(".I")) {
-            appendedString = appendedString.replaceAll(" ","");
-            stringBuilder.setLength(0);
-        }
-        else {
-            queryWords += " " + appendedString;
-            stringBuilder.setLength(0);
-        }
-        //do stuff with data gathered from previous document
-        //queries.add(queryWords);
-        //reinitialise
-        queryWords = "";
-    }
 
 }
