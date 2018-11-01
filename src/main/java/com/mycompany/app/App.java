@@ -6,10 +6,9 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;
-/**
- * Hello world!
- *
- */
+
+
+
 public class App {
     public static void main( String[] args ) throws IOException, ParseException {
     	Analyzer analyzer = CustomAnalyzer.builder()
@@ -19,12 +18,17 @@ public class App {
                 .addTokenFilter("porterstem")
                 .build();
         MyIndexWriter iw = MyIndexWriter.getInstance();
-        iw.parseLATimes();
+        iw.parseFinacialTimes();
+        //iw.parseLATimes();
         //Directory index = iw.index(1, analyzer);
-        MyIndexSearcher searcher = MyIndexSearcher.getInstance();
-        searcher.parseQuery();
-        //searcher.queryFileParser();
 
+        //testing query parsing
+        //MyIndexSearcher searcher = MyIndexSearcher.getInstance();
+        //searcher.parseQuery();
+
+//
+//        must update
+//
         // for (int i = 0; i < 2; i++) {
         //     Directory index = iw.index(i, analyzer);
         //     String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();

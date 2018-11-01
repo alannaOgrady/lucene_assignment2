@@ -36,6 +36,9 @@ public class MyIndexSearcher {
         return instance;
     }
 
+//
+//    must update
+//
     public void search(IndexWriterConfig iwConfig, Directory index, BufferedWriter writer, Analyzer analyzer) throws IOException, ParseException, QueryNodeException {
 
         //IndexReader reader = DirectoryReader.open(index);
