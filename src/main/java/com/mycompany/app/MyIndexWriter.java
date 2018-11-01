@@ -71,7 +71,7 @@ public class MyIndexWriter
     }
 
 
-    public void parseLATimes() throws FileNotFoundException, IOException{
+    public void parseLATimes(IndexWriter w) throws IOException{
         File dir = new File("../assignment-2/Assignment Two/latimes");
 
         for (File file : dir.listFiles(new FileFilter() {
@@ -87,6 +87,7 @@ public class MyIndexWriter
             BufferedReader br = new BufferedReader(new FileReader(file));
             String string = "", appendedString = "";
             String[] tagArray = {"DOCNO", "HEADLINE", "BYLINE", "TEXT", "GRAPHIC"};
+            String docNo = "", headline = "", byline = "", text = "", graphic = "";
 
             StringBuilder stringBuilder = new StringBuilder();
             while ((string = br.readLine()) != null) {
@@ -113,6 +114,10 @@ public class MyIndexWriter
                         }
                     }
                     stringBuilder.setLength(0);
+                    //have reached end of a document write to index
+                    //addDoc(w, docNo, headline, byline, text, graphic);
+                    //reset
+                    docNo = headline = byline = text = graphic = "";
                 }
                 else {
                     stringBuilder = stringBuilder.append(string + " ");
@@ -121,89 +126,6 @@ public class MyIndexWriter
 
 
             br.close();
-        }
-    }
-
-    private void parseForDocs(IndexWriter w) throws IOException {
-        File file = new File("../lucene_assignment/src/main/java/com/alannaogrady/cran.all.1400");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String str;
-        String tag;
-        String prevTag = "";
-
-
-        StringBuilder stringBuilder = new StringBuilder();
-        while ((str = br.readLine()) != null){
-            tag = str.length() < 2 ? str : str.substring(0, 2);
-
-            //does beginning of line start with a tag
-            if (tag.equals(".I") || tag.equals(".T") || tag.equals(".A") || tag.equals(".B") || tag.equals(".W")) {
-
-                //remove tag from the rest of the string
-                str = str.substring(2);
-                //check the previuos tag and add the appended string as its value
-                checkPrevTag(w, prevTag, stringBuilder);
-
-                //must append the rest of the line that the tag is on
-                stringBuilder = stringBuilder.append(str + " ");
-
-                //update prevTag
-                prevTag = tag;
-            }
-            else {
-                //not the tag, therefore must append this line to the string (value of tag)
-                stringBuilder = stringBuilder.append(str + " ");
-            }
-
-        }
-        //must deal with last section
-        //must check what the last tag was
-        checkPrevTag(w, prevTag, stringBuilder);
-        //have finished reading in file must deal with last document
-        //call add doc with doc info
-        if (!identity.equals("") || !title.equals("") || !author.equals("") || !source.equals("") ||!content.equals(""))
-            addDoc(w, identity, title, author, source, content);
-        //reinitialise
-        identity = title = author = source = content = "";
-    }
-
-    private void checkPrevTag(IndexWriter w, String prevTag, StringBuilder stringBuilder) throws IOException {
-        //check what the previous tag was as the string we have been collecting belongs to this
-        String appendedString = stringBuilder.toString();
-        if (prevTag.equals(".I")) {
-            //we are on a new document add/print/whatever prev doc
-            if (!firstRun) {
-                //call add doc with doc info
-                if (!identity.equals("") || !title.equals("") || !author.equals("") || !source.equals("") ||!content.equals(""))
-                    addDoc(w, identity, title, author, source, content);
-                //reinitialise
-                identity = title = author = source = content = "";
-
-            }
-            firstRun = false;
-            //put subsequent info you have gathered into identity field
-            identity +=  " " + appendedString;
-            stringBuilder.setLength(0);
-        }
-        else if (prevTag.equals(".T")) {
-            //put subsequent info you have gathered into title field
-            title +=  " " +  appendedString;
-            stringBuilder.setLength(0);
-        }
-        else if (prevTag.equals(".A")) {
-            //put subsequent info you have gathered into author field
-            author +=  " " +  appendedString;
-            stringBuilder.setLength(0);
-        }
-        else if (prevTag.equals(".B")) {
-            //put subsequent info you have gathered into bibliography field
-            source +=  " " +  appendedString;
-            stringBuilder.setLength(0);
-        }
-        else if (prevTag.equals(".W")) {
-            //put into content field
-            content +=  " " +  appendedString;
-            stringBuilder.setLength(0);
         }
     }
 
