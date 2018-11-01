@@ -2,6 +2,7 @@ package com.mycompany.app;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -15,6 +16,8 @@ import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 
 public class MyIndexWriter 
 {
@@ -68,6 +71,59 @@ public class MyIndexWriter
     }
 
 
+    public void parseLATimes() throws FileNotFoundException, IOException{
+        File dir = new File("../assignment-2/Assignment Two/latimes");
+
+        for (File file : dir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                if (!pathname.getName().endsWith(".txt"))
+                    return true;
+                else
+                    return false;
+            }
+        })) {
+            //parse
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String string = "", appendedString = "";
+            String[] tagArray = {"DOCNO", "HEADLINE", "BYLINE", "TEXT", "GRAPHIC"};
+
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((string = br.readLine()) != null) {
+                //check at the end of a document
+                if (string.contains("</DOC>")) {
+                    stringBuilder = stringBuilder.append(string);
+                    appendedString = stringBuilder.toString();
+                    org.jsoup.nodes.Document doc = Jsoup.parse(appendedString);
+                    for (String tag : tagArray) {
+                        Element element = doc.select(tag).first();
+                        doc.select(tag).remove();
+                        if (element != null) {
+                            if (tag.equals("DOCNO")) {
+                                System.out.println(element.text());
+                            } else if (tag.equals("HEADLINE")) {
+                                System.out.println(element.text());
+                            } else if (tag.equals("BYLINE")) {
+                                System.out.println(element.text());
+                            } else if (tag.equals("TEXT")) {
+                                System.out.println(element.text());
+                            } else if (tag.equals("GRAPHIC")) {
+                                System.out.println(element.text());
+                            }
+                        }
+                    }
+                    stringBuilder.setLength(0);
+                }
+                else {
+                    stringBuilder = stringBuilder.append(string + " ");
+                }
+            }
+
+
+            br.close();
+        }
+    }
+
     private void parseForDocs(IndexWriter w) throws IOException {
         File file = new File("../lucene_assignment/src/main/java/com/alannaogrady/cran.all.1400");
         BufferedReader br = new BufferedReader(new FileReader(file));
@@ -79,7 +135,7 @@ public class MyIndexWriter
         StringBuilder stringBuilder = new StringBuilder();
         while ((str = br.readLine()) != null){
             tag = str.length() < 2 ? str : str.substring(0, 2);
-            
+
             //does beginning of line start with a tag
             if (tag.equals(".I") || tag.equals(".T") || tag.equals(".A") || tag.equals(".B") || tag.equals(".W")) {
 
@@ -87,7 +143,7 @@ public class MyIndexWriter
                 str = str.substring(2);
                 //check the previuos tag and add the appended string as its value
                 checkPrevTag(w, prevTag, stringBuilder);
-                
+
                 //must append the rest of the line that the tag is on
                 stringBuilder = stringBuilder.append(str + " ");
 
@@ -98,7 +154,7 @@ public class MyIndexWriter
                 //not the tag, therefore must append this line to the string (value of tag)
                 stringBuilder = stringBuilder.append(str + " ");
             }
-            
+
         }
         //must deal with last section
         //must check what the last tag was
@@ -122,7 +178,7 @@ public class MyIndexWriter
                     addDoc(w, identity, title, author, source, content);
                 //reinitialise
                 identity = title = author = source = content = "";
-                
+
             }
             firstRun = false;
             //put subsequent info you have gathered into identity field

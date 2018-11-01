@@ -135,6 +135,7 @@ public class MyIndexSearcher {
 
 
         }
+        br.close();
 
 
 
