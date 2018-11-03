@@ -18,7 +18,8 @@ public class App {
                 .addTokenFilter("porterstem")
                 .build();
         MyIndexWriter iw = MyIndexWriter.getInstance();
-        iw.parseFinacialTimes();
+        iw.parseFR();
+        //iw.parseFinacialTimes();
         //iw.parseLATimes();
         //Directory index = iw.index(1, analyzer);
 

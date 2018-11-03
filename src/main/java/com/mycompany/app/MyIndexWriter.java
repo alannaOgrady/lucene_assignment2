@@ -198,10 +198,64 @@ public class MyIndexWriter
    }
 
 //
-//   must update
+//   Docs don't seem to have a title, seems to be a mass of text
+//   Other tags within <TEXT> tag are not consistent throughout the collection
 //
-   private void parseFR() {
-       //must write
+   public void parseFR() throws IOException {
+       File dir = new File("../assignment-2/Assignment Two/fr94");
+       //get subfolders
+       String[] directories = dir.list(new FilenameFilter() {
+           @Override
+           public boolean accept(File current, String name) {
+               return new File(current, name).isDirectory();
+           }
+       });
+       System.out.println(Arrays.toString(directories));
+       for (String subDirectory : directories) {
+           File subDir = new File(dir.getPath() + "/" + subDirectory);
+           for (File file : subDir.listFiles()) {
+               //parse
+               BufferedReader br = new BufferedReader(new FileReader(file));
+               String string = "", appendedString = "";
+               String[] tagArray = {"DOCNO", "TEXT"};
+               String docNo = "", text = "";
+
+               StringBuilder stringBuilder = new StringBuilder();
+               while ((string = br.readLine()) != null) {
+                   //check at the end of a document
+                   if (string.contains("</DOC>")) {
+                       stringBuilder = stringBuilder.append(string);
+                       appendedString = stringBuilder.toString();
+                       org.jsoup.nodes.Document doc = Jsoup.parse(appendedString);
+                       for (String tag : tagArray) {
+                           Element element = doc.select(tag).first();
+                           doc.select(tag).remove();
+                           if (element != null) {
+                               if (tag.equals("DOCNO")) {
+                                   System.out.println(element.text());
+                                   //docNo = element.text();
+                               }  else if (tag.equals("TEXT")) {
+                                   System.out.println(element.text());
+                                   //text = element.text();
+                               }
+                           }
+                       }
+                       stringBuilder.setLength(0);
+                       //have reached end of a document write to index
+                       //addDoc(w, docNo, "", text);
+                       //reset
+                       //docNo = headline = text = "";
+
+                   }
+                   else {
+                       stringBuilder = stringBuilder.append(string + " ");
+                   }
+               }
+
+
+               br.close();
+           }
+       }
    }
 
 //
