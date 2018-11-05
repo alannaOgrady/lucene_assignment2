@@ -261,8 +261,68 @@ public class MyIndexWriter
 //
 //   must update
 //
-    private void parseBRIS() {
+    public void parseFBIS() throws IOException {
         //must write
+    	// Foreign Broadcast Information Service
+    	// /Users/laura/git/lucene_assignment2/Assignment Two/fbis
+    	 File dir = new File("../lucene_assignment2/Assignment Two/fbis");
+
+         for (File file : dir.listFiles(new FileFilter() {
+             @Override
+             public boolean accept(File pathname) {
+                 if (!pathname.getName().endsWith(".txt"))
+                     return true;
+                 else
+                     return false;
+             }
+         })) {
+             //parse
+             BufferedReader br = new BufferedReader(new FileReader(file));
+             String string = "", appendedString = "";
+             String[] tagArray = {"DOCNO", "HEADER", "H3", "TI", "TEXT"};
+             String[] nestedTags = {"H3", "TI"};
+             String docNo = "", headline = "", text = "";
+
+             StringBuilder stringBuilder = new StringBuilder();
+             while ((string = br.readLine()) != null) {
+                 //check at the end of a document
+                 if (string.contains("</DOC>")) {
+                     stringBuilder = stringBuilder.append(string);
+                     appendedString = stringBuilder.toString();
+                     org.jsoup.nodes.Document doc = Jsoup.parse(appendedString);
+                     for (String tag : tagArray) {
+                         Element element = doc.select(tag).first();
+                         doc.select(tag).remove();
+                         if (element != null) {
+                             if (tag.equals("DOCNO")) {
+                                 System.out.println(element.text());
+                                 //docNo = element.text();
+                             } else if (tag.equals("HEADER")) {
+                                 System.out.println(element.text());
+                                 //headline = element.text();
+                             } else if (tag.equals("H3")) {
+                            	 System.out.println(element.text());
+                            	 //headline = element.text();
+                             }else if (tag.equals("TEXT")) {
+                            	 System.out.println(element.text());
+                            	 //text = element.text();
+                             }
+                         }
+                     }
+                     stringBuilder.setLength(0);
+                     //have reached end of a document write to index
+                     //addDoc(w, docNo, headline, byline, text, graphic);
+                     //reset
+                     //docNo = headline = byline = text = graphic = "";
+                 }
+                 else {
+                     stringBuilder = stringBuilder.append(string + " ");
+                 }
+             }
+
+
+             br.close();
+         }
     }
 
 //
