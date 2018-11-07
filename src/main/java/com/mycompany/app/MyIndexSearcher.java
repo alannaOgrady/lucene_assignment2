@@ -88,7 +88,7 @@ public class MyIndexSearcher {
 
     public void parseQuery() throws IOException {
         String appendedString = "";
-        File file = new File("../assignment-2/CS7IS3-Assignment2-Topics");
+        File file = new File("../lucene_assignment2/CS7IS3-Assignment2-Topics");
         BufferedReader br = new BufferedReader(new FileReader(file));
         String str = "";
         String[] tagArray = {"narr", "desc", "title", "num"};

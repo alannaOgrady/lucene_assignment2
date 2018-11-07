@@ -75,7 +75,7 @@ public class MyIndexWriter
 
 
     public void parseLATimes(/*IndexWriter w*/) throws IOException{
-        File dir = new File("../assignment-2/Assignment Two/latimes");
+        File dir = new File("../lucene_assignment2/Assignment Two/latimes");
 
         for (File file : dir.listFiles(new FileFilter() {
             @Override
@@ -138,7 +138,7 @@ public class MyIndexWriter
     }
 
    public void parseFinacialTimes(/*IndexWriter w*/) throws IOException {
-       File dir = new File("../assignment-2/Assignment Two/ft");
+       File dir = new File("../lucene_assignment2/Assignment Two/ft");
        //get subfolders
        String[] directories = dir.list(new FilenameFilter() {
            @Override
@@ -202,7 +202,7 @@ public class MyIndexWriter
 //   Other tags within <TEXT> tag are not consistent throughout the collection
 //
    public void parseFR() throws IOException {
-       File dir = new File("../assignment-2/Assignment Two/fr94");
+       File dir = new File("../lucene_assignment2/Assignment Two/fr94");
        //get subfolders
        String[] directories = dir.list(new FilenameFilter() {
            @Override
