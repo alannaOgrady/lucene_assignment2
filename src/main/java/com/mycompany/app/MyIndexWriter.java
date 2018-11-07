@@ -23,12 +23,10 @@ import org.jsoup.nodes.Element;
 public class MyIndexWriter 
 {
     private static MyIndexWriter instance = null;
-    private String indexPath = "../assignment-2/indexes/";
+    private String indexPath = "../lucene_assignment2/indexes/";
 
     private String identity = "";
     private String title = "";
-    private String author = "";
-    private String source = "";
     private String content = "";
     private Boolean firstRun = true;
     private IndexWriterConfig config;
@@ -62,7 +60,10 @@ public class MyIndexWriter
 
         IndexWriter w = new IndexWriter(index, config);
         w.deleteAll();
-        //parseForDocs(w);
+        parseLATimes(w);
+        parseFinacialTimes(w);
+        parseFBIS(w);
+        parseFR(w);
         w.close();
 
         return index;
@@ -74,7 +75,7 @@ public class MyIndexWriter
     }
 
 
-    public void parseLATimes(/*IndexWriter w*/) throws IOException{
+    private void parseLATimes(IndexWriter w) throws IOException{
         File dir = new File("../lucene_assignment2/Assignment Two/latimes");
 
         for (File file : dir.listFiles(new FileFilter() {
@@ -104,28 +105,28 @@ public class MyIndexWriter
                         doc.select(tag).remove();
                         if (element != null) {
                             if (tag.equals("DOCNO")) {
-                                System.out.println(element.text());
-                                //docNo = element.text();
+                                //System.out.println(element.text());
+                                docNo = element.text();
                             } else if (tag.equals("HEADLINE")) {
-                                System.out.println(element.text());
-                                //headline = element.text();
+                                //System.out.println(element.text());
+                                headline = element.text();
                             } else if (tag.equals("BYLINE")) {
-                                System.out.println(element.text());
+                                //System.out.println(element.text());
                                 //byline = element.text();
                             } else if (tag.equals("TEXT")) {
-                                System.out.println(element.text());
-                                //text = element.text();
+                                //System.out.println(element.text());
+                                text = element.text();
                             } else if (tag.equals("GRAPHIC")) {
-                                System.out.println(element.text());
+                                //System.out.println(element.text());
                                 //graphic = element.text();
                             }
                         }
                     }
                     stringBuilder.setLength(0);
                     //have reached end of a document write to index
-                    //addDoc(w, docNo, headline, byline, text, graphic);
+                    addDoc(w, docNo, headline, text);
                     //reset
-                    //docNo = headline = byline = text = graphic = "";
+                    docNo = headline = byline = text = graphic = "";
                 }
                 else {
                     stringBuilder = stringBuilder.append(string + " ");
@@ -137,7 +138,7 @@ public class MyIndexWriter
         }
     }
 
-   public void parseFinacialTimes(/*IndexWriter w*/) throws IOException {
+   private void parseFinacialTimes(IndexWriter w) throws IOException {
        File dir = new File("../lucene_assignment2/Assignment Two/ft");
        //get subfolders
        String[] directories = dir.list(new FilenameFilter() {
@@ -168,22 +169,22 @@ public class MyIndexWriter
                            doc.select(tag).remove();
                            if (element != null) {
                                if (tag.equals("DOCNO")) {
-                                   System.out.println(element.text());
-                                   //docNo = element.text();
+                                   //System.out.println(element.text());
+                                   docNo = element.text();
                                } else if (tag.equals("HEADLINE")) {
                                    //System.out.println(element.text());
-                                   //headline = element.text();
+                                   headline = element.text();
                                }  else if (tag.equals("TEXT")) {
                                    //System.out.println(element.text());
-                                   //text = element.text();
+                                   text = element.text();
                                }
                            }
                        }
                        stringBuilder.setLength(0);
                        //have reached end of a document write to index
-                       //addDoc(w, docNo, headline, text);
+                       addDoc(w, docNo, headline, text);
                        //reset
-                       //docNo = headline = text = "";
+                       docNo = headline = text = "";
 
                    }
                    else {
@@ -201,7 +202,7 @@ public class MyIndexWriter
 //   Docs don't seem to have a title, seems to be a mass of text
 //   Other tags within <TEXT> tag are not consistent throughout the collection
 //
-   public void parseFR() throws IOException {
+   private void parseFR(IndexWriter w) throws IOException {
        File dir = new File("../lucene_assignment2/Assignment Two/fr94");
        //get subfolders
        String[] directories = dir.list(new FilenameFilter() {
@@ -232,19 +233,19 @@ public class MyIndexWriter
                            doc.select(tag).remove();
                            if (element != null) {
                                if (tag.equals("DOCNO")) {
-                                   System.out.println(element.text());
-                                   //docNo = element.text();
+                                   //System.out.println(element.text());
+                                   docNo = element.text();
                                }  else if (tag.equals("TEXT")) {
-                                   System.out.println(element.text());
-                                   //text = element.text();
+                                   //System.out.println(element.text());
+                                   text = element.text();
                                }
                            }
                        }
                        stringBuilder.setLength(0);
                        //have reached end of a document write to index
-                       //addDoc(w, docNo, "", text);
+                       addDoc(w, docNo, "", text);
                        //reset
-                       //docNo = headline = text = "";
+                       docNo = text = "";
 
                    }
                    else {
@@ -261,7 +262,7 @@ public class MyIndexWriter
 //
 //   must update
 //
-    public void parseFBIS() throws IOException {
+    private void parseFBIS(IndexWriter w) throws IOException {
         //must write
     	// Foreign Broadcast Information Service
     	// /Users/laura/git/lucene_assignment2/Assignment Two/fbis
@@ -295,25 +296,25 @@ public class MyIndexWriter
                          doc.select(tag).remove();
                          if (element != null) {
                              if (tag.equals("DOCNO")) {
-                                 System.out.println(element.text());
-                                 //docNo = element.text();
+                                 //System.out.println(element.text());
+                                 docNo = element.text();
                              } else if (tag.equals("HEADER")) {
-                                 System.out.println(element.text());
-                                 //headline = element.text();
+                                 //System.out.println(element.text());
+                                 headline = element.text();
                              } else if (tag.equals("H3")) {
-                            	 System.out.println(element.text());
+                            	 //System.out.println(element.text());
                             	 //headline = element.text();
                              }else if (tag.equals("TEXT")) {
-                            	 System.out.println(element.text());
-                            	 //text = element.text();
+                            	 //System.out.println(element.text());
+                            	 text = element.text();
                              }
                          }
                      }
                      stringBuilder.setLength(0);
                      //have reached end of a document write to index
-                     //addDoc(w, docNo, headline, byline, text, graphic);
+                     addDoc(w, docNo, headline, text);
                      //reset
-                     //docNo = headline = byline = text = graphic = "";
+                     docNo = headline = text = "";
                  }
                  else {
                      stringBuilder = stringBuilder.append(string + " ");
@@ -328,13 +329,11 @@ public class MyIndexWriter
 //
 //   must update
 //
-    private void addDoc(IndexWriter w, String id, String title, String author, String source, String content) throws IOException {
+    private void addDoc(IndexWriter w, String id, String title, String content) throws IOException {
         Document doc = new Document();
+        // use a string field for author because we don't want it tokenized
         doc.add(new StringField("id", id, Field.Store.YES));
         doc.add(new TextField("title", title, Field.Store.YES));
-        // use a string field for author because we don't want it tokenized
-        //doc.add(new StringField("author", author, Field.Store.YES));
-        //doc.add(new TextField("source", source, Field.Store.YES));
         doc.add(new TextField("content", content, Field.Store.YES));
 
         w.addDocument(doc);
