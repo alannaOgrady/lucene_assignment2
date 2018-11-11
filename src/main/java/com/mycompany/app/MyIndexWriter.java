@@ -104,19 +104,19 @@ public class MyIndexWriter
                         doc.select(tag).remove();
                         if (element != null) {
                             if (tag.equals("DOCNO")) {
-                                System.out.println(element.text());
+                                //System.out.println(element.text());
                                 //docNo = element.text();
                             } else if (tag.equals("HEADLINE")) {
-                                System.out.println(element.text());
+                                //System.out.println(element.text());
                                 //headline = element.text();
                             } else if (tag.equals("BYLINE")) {
-                                System.out.println(element.text());
+                                //System.out.println(element.text());
                                 //byline = element.text();
                             } else if (tag.equals("TEXT")) {
-                                System.out.println(element.text());
+                                //System.out.println(element.text());
                                 //text = element.text();
                             } else if (tag.equals("GRAPHIC")) {
-                                System.out.println(element.text());
+                                //System.out.println(element.text());
                                 //graphic = element.text();
                             }
                         }
@@ -168,7 +168,7 @@ public class MyIndexWriter
                            doc.select(tag).remove();
                            if (element != null) {
                                if (tag.equals("DOCNO")) {
-                                   System.out.println(element.text());
+                                   //System.out.println(element.text());
                                    //docNo = element.text();
                                } else if (tag.equals("HEADLINE")) {
                                    //System.out.println(element.text());
@@ -232,10 +232,10 @@ public class MyIndexWriter
                            doc.select(tag).remove();
                            if (element != null) {
                                if (tag.equals("DOCNO")) {
-                                   System.out.println(element.text());
+                                  // System.out.println(element.text());
                                    //docNo = element.text();
                                }  else if (tag.equals("TEXT")) {
-                                   System.out.println(element.text());
+                                   //System.out.println(element.text());
                                    //text = element.text();
                                }
                            }
@@ -295,16 +295,16 @@ public class MyIndexWriter
                          doc.select(tag).remove();
                          if (element != null) {
                              if (tag.equals("DOCNO")) {
-                                 System.out.println(element.text());
+                                 //System.out.println(element.text());
                                  //docNo = element.text();
                              } else if (tag.equals("HEADER")) {
-                                 System.out.println(element.text());
+                                 //System.out.println(element.text());
                                  //headline = element.text();
                              } else if (tag.equals("H3")) {
-                            	 System.out.println(element.text());
+                            	 //System.out.println(element.text());
                             	 //headline = element.text();
                              }else if (tag.equals("TEXT")) {
-                            	 System.out.println(element.text());
+                            	// System.out.println(element.text());
                             	 //text = element.text();
                              }
                          }
