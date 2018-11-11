@@ -7,6 +7,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
@@ -41,50 +42,60 @@ public class MyIndexSearcher {
 //
     public void search(IndexWriterConfig iwConfig, Directory index, BufferedWriter writer, Analyzer analyzer) throws IOException, ParseException, QueryNodeException {
 
-        //IndexReader reader = DirectoryReader.open(index);
+		IndexReader reader = DirectoryReader.open(index);
 
-        //query
-        // for (int j = 0; j < queries.size(); j++) {
-        //     Map<String, Float> boostMap = new HashMap<String, Float>();
-        //     boostMap.put("content", 2.3f);
+		Map<String, Float> boostMap = new HashMap<String, Float>();
+		//String[] tagArray = {"narr", "desc", "title", "num"};
+		boostMap.put("narr", 2.3f);
+		boostMap.put("desc", 2.3f);
+		boostMap.put("title", 2.3f);
 
-        //     MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
-        //     //MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer);
-        //     String querystr = parser.escape(queries.get(j));
-        //     Query q = parser.parse(querystr);
+		MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"narr", "desc", "title"}, analyzer, boostMap);
 
-
-        //     IndexSearcher searcher = new IndexSearcher(reader);
-        //     searcher.setSimilarity(iwConfig.getSimilarity());
-
-        //     //to get all retrieved docs
-        //     TotalHitCountCollector collector = new TotalHitCountCollector();
-        //     searcher.search(q, collector);
-        //     //use 1 if there is 0 hits
-        //     TopDocs docs = searcher.search(q, Math.max(1, collector.getTotalHits()));
-        //     ScoreDoc[] hits = docs.scoreDocs;   //returns an array of retrieved documents
-        //     num++;
+		//query
+		for (int j = 0; j < queries.size(); j++) {
+			//     //MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer);
+			String querystr = queries.get(j).getQueryNarrative() +" "+ queries.get(j).getQueryDescription() 
+					+ " "+ queries.get(j).getQueryTitle();
 
 
-        //     // 4. display results
+			Query q = parser.parse(QueryParser.escape(querystr));
+			System.out.println("query " + q.toString());
 
-        //     for (int i = 0; i < hits.length; ++i) {
-        //         int docId = hits[i].doc;
-        //         Document d = searcher.doc(docId);
+			IndexSearcher searcher = new IndexSearcher(reader);
+			searcher.setSimilarity(iwConfig.getSimilarity());
 
-        //         float score = hits[i].score;
+			//to get all retrieved docs
+			TotalHitCountCollector collector = new TotalHitCountCollector();
+			searcher.search(q, collector);
 
-        //         //write to a results file
-        //         String results = (j+1) + " Q0" + d.get("id") + " " + (i + 1) + " " + score + " exp\n";
-        //         writer.write(results);
+			//use 1 if there is 0 hits
+			TopDocs docs = searcher.search(q, Math.max(1, collector.getTotalHits()));
+			ScoreDoc[] hits = docs.scoreDocs;   //returns an array of retrieved documents
+			num++;
 
-        //     }
-        // }
+			System.out.println(hits.length);
 
-        // reader can only be closed when there
-        // is no need to access the documents any more.
-        //reader.close();
-    }
+
+			//     // 4. display results
+
+			for (int i = 0; i < hits.length; ++i) {
+				int docId = hits[i].doc;
+				Document d = searcher.doc(docId);
+
+				float score = hits[i].score;
+
+				//write to a results file
+				String results = (j+1) + " Q0" + d.get("id") + " " + (i + 1) + " " + score + " exp\n";
+				writer.write(results);
+
+			}
+		}
+
+		// reader can only be closed when there
+		// is no need to access the documents any more.
+		reader.close();
+	}
 
     public void parseQuery() throws IOException {
         String appendedString = "";
