@@ -87,7 +87,7 @@ public class MyIndexSearcher {
 
 				//write to a results file
 				//fix order
-				String results =queries.get(j).getQueryNum() + " Q0" + d.get("id") + " " + (i + 1) + " " + score + " exp\n";
+				String results =queries.get(j).getQueryNum() + " Q0 " + d.get("id") + " " + (i + 1) + " " + score + " exp\n";
 				writer.write(results);
 
 			}
