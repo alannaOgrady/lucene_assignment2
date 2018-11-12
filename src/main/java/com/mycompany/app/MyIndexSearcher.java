@@ -46,9 +46,9 @@ public class MyIndexSearcher {
 
 		Map<String, Float> boostMap = new HashMap<String, Float>();
 		//String[] tagArray = {"narr", "desc", "title", "num"};
-		boostMap.put("narr", 2.3f);
-		boostMap.put("desc", 2.3f);
 		boostMap.put("title", 2.3f);
+		boostMap.put("content", 2.3f);
+		//boostMap.put("title", 2.3f);
 
 		MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"narr", "desc", "title"}, analyzer, boostMap);
 
