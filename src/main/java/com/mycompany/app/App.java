@@ -19,11 +19,19 @@ public class App {
                 .build();
         MyIndexWriter iw = MyIndexWriter.getInstance();
 
+        System.out.print("Indexing... ");
         Directory index = iw.index(1, analyzer);
+        System.out.println("DONE!");
 
-        //testing query parsing
-        //MyIndexSearcher searcher = MyIndexSearcher.getInstance();
-        //searcher.parseQuery();
+        System.out.print("Searching... ");
+        MyIndexSearcher searcher = new MyIndexSearcher(iw.index(1, analyzer), analyzer, iw.getConfig(), iw);
+        searcher.parseQuery();
+        searcher.doQueriesOnIndex();
+        System.out.println("DONE!");
+
+//        // testing query parsing
+//        MyIndexSearcher searcher = MyIndexSearcher.getInstance();
+//        searcher.parseQuery();
 
 //
 //        must update

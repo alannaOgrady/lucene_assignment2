@@ -24,16 +24,54 @@ public class MyIndexSearcher {
 
     private static MyIndexSearcher instance = null;
     private ArrayList<MyQuery> queries = new ArrayList<>();
+    private Directory index;
+    private Analyzer analyzer;
+    private IndexWriterConfig config;
+    private MyIndexWriter iw;
     public int num = 0;
 
-    private MyIndexSearcher() {
-        // Exists only to defeat instantiation.
+    public MyIndexSearcher(Directory index, Analyzer analyzer, IndexWriterConfig config, MyIndexWriter iw) {
+        this.index = index;
+        this.analyzer = analyzer;
+        this.config = config;
+        this.iw = iw;
     }
-    public static MyIndexSearcher getInstance() {
-        if(instance == null) {
-            instance = new MyIndexSearcher();
+
+    public void doQueriesOnIndex() throws IOException, ParseException {
+        IndexReader reader = DirectoryReader.open(index);
+        IndexSearcher searcher = new IndexSearcher(reader);
+        searcher.setSimilarity(config.getSimilarity());
+        String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
+        fileName = fileName.replaceAll("\\p{P}","");
+        File outfile = new File("../lucene_assignment/results/" + fileName);
+        if(outfile.getParentFile().mkdirs()) {
+            System.out.println("esadfasdf");
         }
-        return instance;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
+        int qNum = 0;
+
+        for(MyQuery q : queries) {
+            qNum++;
+            MultiFieldQueryParser qp = new MultiFieldQueryParser(new String[]{"title", "content"}, analyzer); // TODO: add boosting
+            Query query = qp.parse(q.getQueryTitle());
+            TotalHitCountCollector collect = new TotalHitCountCollector();
+            searcher.search(query, collect);
+            TopDocs td = searcher.search(query, Math.max(1, collect.getTotalHits()));
+            ScoreDoc[] sd = td.scoreDocs;
+
+            for (int i = 0; i < sd.length; ++i) {
+                int docId = sd[i].doc;
+                Document d = searcher.doc(docId);
+
+                float score = sd[i].score;
+
+                //write to a results file
+                String results = (qNum) + " Q0" + d.get("id") + " " + (i + 1) + " " + score + " exp\n";
+                writer.write(results);
+            }
+        }
+
+        reader.close();
     }
 
 //
@@ -109,19 +147,15 @@ public class MyIndexSearcher {
                     doc.select(tag).remove();
                     if (tag.equals("narr")) {
                         narr = element.text().substring(11, element.text().length());
-                        System.out.println(narr);
                     }
                     else if (tag.equals("desc")) {
                         desc = element.text().substring(13, element.text().length());
-                        System.out.println(desc);
                     }
                     else if (tag.equals("title")) {
                         title = element.text();
-                        System.out.println(title);
                     }
                     else if (tag.equals("num")) {
                         num = element.text().substring(8, element.text().length());
-                        System.out.println(num);
                     }
 
                 }
@@ -143,8 +177,4 @@ public class MyIndexSearcher {
 
 
     }
-
-
-
-
 }
