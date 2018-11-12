@@ -79,14 +79,15 @@ public class MyIndexSearcher {
 
 			//     // 4. display results
 
-			for (int i = 0; i < hits.length; ++i) {
+			for (int i = 0; i < 30; ++i) {
 				int docId = hits[i].doc;
 				Document d = searcher.doc(docId);
 
 				float score = hits[i].score;
 
 				//write to a results file
-				String results = (j+1) + " Q0" + d.get("id") + " " + (i + 1) + " " + score + " exp\n";
+				//fix order
+				String results =queries.get(j).getQueryNum() + " Q0" + d.get("id") + " " + (i + 1) + " " + score + " exp\n";
 				writer.write(results);
 
 			}
