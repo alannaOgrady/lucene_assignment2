@@ -22,32 +22,18 @@ public class App {
 				.build();
 		MyIndexWriter iw = MyIndexWriter.getInstance();
 
-		//Directory index = iw.index(0, analyzer);
-
-		//testing query parsing
-		//        MyIndexSearcher searcher = MyIndexSearcher.getInstance();
-		//        searcher.parseQuery();
-		//             //Directory index = iw.index(i, analyzer);
-		//             String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
-		//             fileName = fileName.replaceAll("\\p{P}","");
-		//            BufferedWriter writer = new BufferedWriter(new FileWriter("../lucene_assignment2/results/" + fileName));
-		//            searcher.search(iw.getConfig(), index, writer, analyzer);
-		//            writer.close();
-
-		//
-		//        must update
-		//
         MyIndexSearcher searcher = MyIndexSearcher.getInstance();
-        //only need to parse queries once
 		searcher.parseQuery();
+
+		Directory index = iw.index( analyzer);
+		String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
+		fileName = fileName.replaceAll("\\p{P}","");
+		BufferedWriter writer = new BufferedWriter(new FileWriter("../lucene_assignment2/results/" + fileName));
+		searcher.search(iw.getConfig(), index, writer, analyzer);
+		writer.close();
 		//so indexes and searches with both BM25 and Classic
-		for (int i = 0; i < 2; i++) {
-			Directory index = iw.index(i, analyzer);
-			String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
-			fileName = fileName.replaceAll("\\p{P}","");
-			BufferedWriter writer = new BufferedWriter(new FileWriter("../lucene_assignment2/results/" + fileName));
-			searcher.search(iw.getConfig(), index, writer, analyzer);
-			writer.close();
+		for (int i = 0; i < 1; i++) {
+
 		}
 	}
 }

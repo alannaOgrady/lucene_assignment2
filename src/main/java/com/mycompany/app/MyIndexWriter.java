@@ -42,20 +42,18 @@ public class MyIndexWriter
 //
 //    must update
 //
-    public Directory index(int iteration, Analyzer analyzer) throws IOException, ParseException {
+    public Directory index(Analyzer analyzer) throws IOException, ParseException {
 
         Directory index = FSDirectory.open(Paths.get(indexPath));
 
         config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-        if (iteration == 0) {
-            config.setSimilarity(new BM25Similarity());
-            System.out.println("Indexing with BM25");
-        }
-        else if (iteration == 1) {
+        config.setSimilarity(new BM25Similarity());
+        System.out.println("Indexing with BM25");
+        /*else if (iteration == 1) {
             config.setSimilarity(new ClassicSimilarity());
             System.out.println("Indexing with Classic Similarity");
-        }
+        }*/
 
         IndexWriter w = new IndexWriter(index, config);
         w.deleteAll();

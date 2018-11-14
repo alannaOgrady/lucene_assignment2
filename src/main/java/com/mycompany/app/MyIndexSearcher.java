@@ -47,7 +47,7 @@ public class MyIndexSearcher {
 
 		Map<String, Float> boostMap = new HashMap<String, Float>();
 		//String[] tagArray = {"narr", "desc", "title", "num"};
-		boostMap.put("title", 2.3f);
+		boostMap.put("title", 1.0f);
 		boostMap.put("content", 2.3f);
 		//boostMap.put("title", 2.3f);
 
@@ -56,7 +56,7 @@ public class MyIndexSearcher {
 		//query
 		for (int j = 0; j < queries.size(); j++) {
 			//     //MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer);
-			String querystr = queries.get(j).getQueryNarrative() +" "+ queries.get(j).getQueryDescription() 
+			String querystr = /*queries.get(j).getQueryNarrative() +" "+*/ queries.get(j).getQueryDescription() 
 					+ " "+ queries.get(j).getQueryTitle();
 
 
@@ -75,12 +75,12 @@ public class MyIndexSearcher {
 			ScoreDoc[] hits = docs.scoreDocs;   //returns an array of retrieved documents
 			num++;
 
-			System.out.println(hits.length);
+			//System.out.println(hits.length);
 
 
 			//     // 4. display results
 
-			for (int i = 0; i < 30; ++i) {
+			for (int i = 0; i < hits.length; ++i) {
 				int docId = hits[i].doc;
 				Document d = searcher.doc(docId);
 
