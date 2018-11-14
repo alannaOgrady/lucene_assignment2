@@ -24,11 +24,6 @@ public class MyIndexWriter
 {
     private static MyIndexWriter instance = null;
     private String indexPath = "../lucene_assignment2/indexes/";
-
-    private String identity = "";
-    private String title = "";
-    private String content = "";
-    private Boolean firstRun = true;
     private IndexWriterConfig config;
     public int docs_created = 0;
 
@@ -53,10 +48,14 @@ public class MyIndexWriter
 
         config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-        if (iteration == 0)
+        if (iteration == 0) {
             config.setSimilarity(new BM25Similarity());
-        else if (iteration == 1)
+            System.out.println("Indexing with BM25");
+        }
+        else if (iteration == 1) {
             config.setSimilarity(new ClassicSimilarity());
+            System.out.println("Indexing with Classic Similarity");
+        }
 
         IndexWriter w = new IndexWriter(index, config);
         w.deleteAll();
@@ -76,6 +75,7 @@ public class MyIndexWriter
 
 
     private void parseLATimes(IndexWriter w) throws IOException{
+        System.out.println("Parsing LA Times...");
         File dir = new File("../lucene_assignment2/Assignment Two/latimes");
 
         for (File file : dir.listFiles(new FileFilter() {
@@ -139,6 +139,7 @@ public class MyIndexWriter
     }
 
    private void parseFinacialTimes(IndexWriter w) throws IOException {
+       System.out.println("Parsing Financial Times...");
        File dir = new File("../lucene_assignment2/Assignment Two/ft");
        //get subfolders
        String[] directories = dir.list(new FilenameFilter() {
@@ -147,7 +148,7 @@ public class MyIndexWriter
                return new File(current, name).isDirectory();
            }
        });
-       System.out.println(Arrays.toString(directories));
+       //System.out.println(Arrays.toString(directories));
        for (String subDirectory : directories) {
            File subDir = new File(dir.getPath() + "/" + subDirectory);
            for (File file : subDir.listFiles()) {
@@ -201,8 +202,10 @@ public class MyIndexWriter
 //
 //   Docs don't seem to have a title, seems to be a mass of text
 //   Other tags within <TEXT> tag are not consistent throughout the collection
+//   Removing unnecessary information from within the text tag (eg. billing info)
 //
    private void parseFR(IndexWriter w) throws IOException {
+       System.out.println("Parsing Federal Register...");
        File dir = new File("../lucene_assignment2/Assignment Two/fr94");
        //get subfolders
        String[] directories = dir.list(new FilenameFilter() {
@@ -211,15 +214,15 @@ public class MyIndexWriter
                return new File(current, name).isDirectory();
            }
        });
-       System.out.println(Arrays.toString(directories));
+       //System.out.println(Arrays.toString(directories));
        for (String subDirectory : directories) {
            File subDir = new File(dir.getPath() + "/" + subDirectory);
            for (File file : subDir.listFiles()) {
                //parse
                BufferedReader br = new BufferedReader(new FileReader(file));
                String string = "", appendedString = "";
-               String[] tagArray = {"DOCNO", "TEXT"};
-               String docNo = "", text = "";
+               String[] tagArray = {"DOCNO", "RINDOCK", "BILLING", "FRFILING", "CFRNO", "SIGNER", "SIGNJOB", "DATE", "TITLE", "TEXT"};
+               String docNo = "", title = "", text = "";
 
                StringBuilder stringBuilder = new StringBuilder();
                while ((string = br.readLine()) != null) {
@@ -235,7 +238,10 @@ public class MyIndexWriter
                                if (tag.equals("DOCNO")) {
                                    //System.out.println(element.text());
                                    docNo = element.text();
-                               }  else if (tag.equals("TEXT")) {
+                               }
+                               else if (tag.equals("TITLE")) {
+                                   title = element.text();
+                               } else if (tag.equals("TEXT")) {
                                    //System.out.println(element.text());
                                    text = element.text();
                                }
@@ -243,9 +249,9 @@ public class MyIndexWriter
                        }
                        stringBuilder.setLength(0);
                        //have reached end of a document write to index
-                       addDoc(w, docNo, "", text);
+                       addDoc(w, docNo, title, text);
                        //reset
-                       docNo = text = "";
+                       docNo = title = text = "";
 
                    }
                    else {
@@ -263,9 +269,8 @@ public class MyIndexWriter
 //   must update
 //
     private void parseFBIS(IndexWriter w) throws IOException {
-        //must write
-    	// Foreign Broadcast Information Service
-    	// /Users/laura/git/lucene_assignment2/Assignment Two/fbis
+         System.out.println("Parsing Foreign Broadcast Information Service...");
+         // Foreign Broadcast Information Service
     	 File dir = new File("../lucene_assignment2/Assignment Two/fbis");
 
          for (File file : dir.listFiles(new FileFilter() {

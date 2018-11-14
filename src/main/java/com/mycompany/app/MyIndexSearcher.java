@@ -42,6 +42,7 @@ public class MyIndexSearcher {
 //
     public void search(IndexWriterConfig iwConfig, Directory index, BufferedWriter writer, Analyzer analyzer) throws IOException, ParseException, QueryNodeException {
 
+        System.out.println("Searching collection...");
 		IndexReader reader = DirectoryReader.open(index);
 
 		Map<String, Float> boostMap = new HashMap<String, Float>();
@@ -60,7 +61,7 @@ public class MyIndexSearcher {
 
 
 			Query q = parser.parse(QueryParser.escape(querystr));
-			System.out.println("query " + q.toString());
+			//System.out.println("query " + q.toString());
 
 			IndexSearcher searcher = new IndexSearcher(reader);
 			searcher.setSimilarity(iwConfig.getSimilarity());
@@ -99,6 +100,7 @@ public class MyIndexSearcher {
 	}
 
     public void parseQuery() throws IOException {
+        System.out.println("Parsing Query Topics...");
         String appendedString = "";
         File file = new File("../lucene_assignment2/CS7IS3-Assignment2-Topics");
         BufferedReader br = new BufferedReader(new FileReader(file));
@@ -121,19 +123,19 @@ public class MyIndexSearcher {
                     doc.select(tag).remove();
                     if (tag.equals("narr")) {
                         narr = element.text().substring(11, element.text().length());
-                        System.out.println(narr);
+                        //System.out.println(narr);
                     }
                     else if (tag.equals("desc")) {
                         desc = element.text().substring(13, element.text().length());
-                        System.out.println(desc);
+                        //System.out.println(desc);
                     }
                     else if (tag.equals("title")) {
                         title = element.text();
-                        System.out.println(title);
+                        //System.out.println(title);
                     }
                     else if (tag.equals("num")) {
                         num = element.text().substring(8, element.text().length());
-                        System.out.println(num);
+                        //System.out.println(num);
                     }
 
                 }

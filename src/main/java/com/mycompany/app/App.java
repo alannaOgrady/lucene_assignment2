@@ -37,12 +37,11 @@ public class App {
 		//
 		//        must update
 		//
+        MyIndexSearcher searcher = MyIndexSearcher.getInstance();
+        //only need to parse queries once
+		searcher.parseQuery();
+		//so indexes and searches with both BM25 and Classic
 		for (int i = 0; i < 2; i++) {
-			//Directory index = iw.index(0, analyzer);
-
-			//testing query parsing
-			MyIndexSearcher searcher = MyIndexSearcher.getInstance();
-			searcher.parseQuery();
 			Directory index = iw.index(i, analyzer);
 			String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
 			fileName = fileName.replaceAll("\\p{P}","");
