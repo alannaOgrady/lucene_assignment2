@@ -3,13 +3,14 @@ package com.mycompany.app;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.store.Directory;
-
+import org.apache.lucene.store.FSDirectory;
 
 
 public class App {
@@ -26,14 +27,13 @@ public class App {
 		searcher.parseQuery();
 
 		Directory index = iw.index( analyzer);
-		String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
+		//String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
+		String fileName = "trec_res_BM25";
+
 		fileName = fileName.replaceAll("\\p{P}","");
 		BufferedWriter writer = new BufferedWriter(new FileWriter("../lucene_assignment2/results/" + fileName));
-		searcher.search(iw.getConfig(), index, writer, analyzer);
+		searcher.search(index, writer, analyzer);
 		writer.close();
-		//so indexes and searches with both BM25 and Classic
-		for (int i = 0; i < 1; i++) {
 
-		}
 	}
 }

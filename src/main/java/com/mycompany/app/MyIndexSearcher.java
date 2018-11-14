@@ -10,6 +10,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.store.Directory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -40,31 +41,31 @@ public class MyIndexSearcher {
 //
 //    must update
 //
-    public void search(IndexWriterConfig iwConfig, Directory index, BufferedWriter writer, Analyzer analyzer) throws IOException, ParseException, QueryNodeException {
+    public void search(Directory index, BufferedWriter writer, Analyzer analyzer) throws IOException, ParseException, QueryNodeException {
 
         System.out.println("Searching collection...");
 		IndexReader reader = DirectoryReader.open(index);
 
-		Map<String, Float> boostMap = new HashMap<String, Float>();
-		//String[] tagArray = {"narr", "desc", "title", "num"};
-		boostMap.put("title", 1.0f);
-		boostMap.put("content", 2.3f);
-		//boostMap.put("title", 2.3f);
 
-		MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"narr", "desc", "title"}, analyzer, boostMap);
+
+		//MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
 
 		//query
 		for (int j = 0; j < queries.size(); j++) {
-			//     //MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer);
-			String querystr = /*queries.get(j).getQueryNarrative() +" "+*/ queries.get(j).getQueryDescription() 
-					+ " "+ queries.get(j).getQueryTitle();
+		    System.out.println(j);
+            Map<String, Float> boostMap = new HashMap<String, Float>();
+            boostMap.put("content", 2.3f);
+			MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
+			String querystr =/* queries.get(j).getQueryNarrative() +" "+*/ queries.get(j).getQueryDescription()
+					+ " " + queries.get(j).getQueryTitle();
 
 
 			Query q = parser.parse(QueryParser.escape(querystr));
 			//System.out.println("query " + q.toString());
 
 			IndexSearcher searcher = new IndexSearcher(reader);
-			searcher.setSimilarity(iwConfig.getSimilarity());
+			//searcher.setSimilarity(iwConfig.getSimilarity());
+            searcher.setSimilarity(new BM25Similarity());
 
 			//to get all retrieved docs
 			TotalHitCountCollector collector = new TotalHitCountCollector();
