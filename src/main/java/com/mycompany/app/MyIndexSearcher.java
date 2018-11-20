@@ -81,7 +81,7 @@ public class MyIndexSearcher {
 
 			//     // 4. display results
 
-			for (int i = 0; i < hits.length; ++i) {
+			for (int i = 0; i < 1000; ++i) {
 				int docId = hits[i].doc;
 				Document d = searcher.doc(docId);
 
