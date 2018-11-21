@@ -27,6 +27,8 @@ public class App {
 		searcher.parseQuery();
 
 		Directory index = iw.index( analyzer);
+		//use when dont want to parse and index, just want to use old index
+		//Directory index = iw.getTestIndex();
 		//String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
 		String fileName = "trec_res_BM25";
 

@@ -29,6 +29,7 @@ public class MyIndexWriter
 
 
 
+
     private MyIndexWriter() {
       // Exists only to defeat instantiation.
     }
@@ -37,6 +38,10 @@ public class MyIndexWriter
          instance = new MyIndexWriter();
       }
       return instance;
+    }
+
+    public Directory getTestIndex() throws IOException{
+        return FSDirectory.open(Paths.get(indexPath));
     }
 
 //
@@ -219,7 +224,7 @@ public class MyIndexWriter
                //parse
                BufferedReader br = new BufferedReader(new FileReader(file));
                String string = "", appendedString = "";
-               String[] tagArray = {"DOCNO", "RINDOCK", "BILLING", "FRFILING", "CFRNO", "SIGNER", "SIGNJOB", "DATE", "TITLE", "TEXT"};
+               String[] tagArray = {"DOCNO", /*"RINDOCK", "BILLING", "FRFILING", "CFRNO", "SIGNER", "SIGNJOB", "DATE",*/ "TITLE", "TEXT"};
                String docNo = "", title = "", text = "";
 
                StringBuilder stringBuilder = new StringBuilder();

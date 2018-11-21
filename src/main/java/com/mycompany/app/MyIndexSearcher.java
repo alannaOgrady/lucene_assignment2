@@ -17,6 +17,7 @@ import org.jsoup.nodes.Element;
 
 
 import java.io.*;
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,9 +55,10 @@ public class MyIndexSearcher {
 		for (int j = 0; j < queries.size(); j++) {
 		    System.out.println(j);
             Map<String, Float> boostMap = new HashMap<String, Float>();
-            boostMap.put("content", 2.3f);
+            boostMap.put("title", 1.0f);
+            boostMap.put("content", 7.5f);
 			MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
-			String querystr =/* queries.get(j).getQueryNarrative() +" "+*/ queries.get(j).getQueryDescription()
+			String querystr = /*queries.get(j).getQueryNarrative() +" "+*/ queries.get(j).getQueryDescription()
 					+ " " + queries.get(j).getQueryTitle();
 
 
@@ -81,7 +83,7 @@ public class MyIndexSearcher {
 
 			//     // 4. display results
 
-			for (int i = 0; i < 1000; ++i) {
+			for (int i = 0; i < 3000; ++i) {
 				int docId = hits[i].doc;
 				Document d = searcher.doc(docId);
 
