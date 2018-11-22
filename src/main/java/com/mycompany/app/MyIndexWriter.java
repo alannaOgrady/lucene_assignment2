@@ -224,7 +224,7 @@ public class MyIndexWriter
                //parse
                BufferedReader br = new BufferedReader(new FileReader(file));
                String string = "", appendedString = "";
-               String[] tagArray = {"DOCNO", /*"RINDOCK", "BILLING", "FRFILING", "CFRNO", "SIGNER", "SIGNJOB", "DATE",*/ "TITLE", "TEXT"};
+               String[] tagArray = {"DOCNO", /*"RINDOCK", "BILLING", "FRFILING", "CFRNO", "SIGNER", "SIGNJOB",*/ "TITLE", "TEXT"};
                String docNo = "", title = "", text = "";
 
                StringBuilder stringBuilder = new StringBuilder();

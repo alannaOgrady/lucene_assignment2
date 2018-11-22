@@ -9,6 +9,10 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.en.EnglishPossessiveFilterFactory;
+import org.apache.lucene.analysis.en.KStemFilterFactory;
+import org.apache.lucene.analysis.en.PorterStemFilterFactory;
+import org.apache.lucene.analysis.miscellaneous.KeywordRepeatFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.TrimFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
@@ -26,16 +30,12 @@ public class App {
 				.withTokenizer(StandardTokenizerFactory.class)
 				//.withTokenizer("standard")
 				.addTokenFilter(LowerCaseFilterFactory.class)
-				.addTokenFilter("stop")
+				.addTokenFilter(StopFilterFactory.class)
 				//.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "stopwords.txt", "format", "wordset")
 				.addTokenFilter(SnowballPorterFilterFactory.class)
 				.addTokenFilter(TrimFilterFactory.class)
+				.addTokenFilter(KeywordRepeatFilterFactory.class)
 				.build();
-				/*.withTokenizer("standard")
-				.addTokenFilter("lowercase")
-				.addTokenFilter("stop")
-				.addTokenFilter("porterstem")
-				.build();*/
 		MyIndexWriter iw = MyIndexWriter.getInstance();
 
         MyIndexSearcher searcher = MyIndexSearcher.getInstance();
