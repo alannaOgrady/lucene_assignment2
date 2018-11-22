@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.compound.DictionaryCompoundWordTokenFilterFactory;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
@@ -28,13 +29,12 @@ public class App {
 	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException {
 		Analyzer analyzer = CustomAnalyzer.builder()
 				.withTokenizer(StandardTokenizerFactory.class)
-				//.withTokenizer("standard")
 				.addTokenFilter(LowerCaseFilterFactory.class)
 				.addTokenFilter(StopFilterFactory.class)
-				//.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "stopwords.txt", "format", "wordset")
 				.addTokenFilter(SnowballPorterFilterFactory.class)
 				.addTokenFilter(TrimFilterFactory.class)
 				.addTokenFilter(KeywordRepeatFilterFactory.class)
+				//.addTokenFilter(DictionaryCompoundWordTokenFilterFactory.class)
 				.build();
 		MyIndexWriter iw = MyIndexWriter.getInstance();
 

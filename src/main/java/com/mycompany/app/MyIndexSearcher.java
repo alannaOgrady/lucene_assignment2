@@ -65,9 +65,9 @@ public class MyIndexSearcher {
 			/*if (!queries.get(j).getNonRelevantQueryNarrative().equals("")) {
 			    querystr += " OR NOT " + queries.get(j).getNonRelevantQueryNarrative();
             }*/
-            /*else if (!queries.get(j).getRelevantQueryNarrative().equals("")) {
-                querystr +=  queries.get(j).getRelevantQueryNarrative();
-            }*/
+			if (!queries.get(j).getRelevantQueryNarrative().equals("")) {
+                querystr +=  " " + queries.get(j).getRelevantQueryNarrative();
+            }
 			//querystr = querystr.replaceAll("[,']", "");
 
 
@@ -192,7 +192,8 @@ public class MyIndexSearcher {
             if (!sentance.contains("irrelevant") && !sentance.contains("not relevant")) {
                 sentance = sentance.toLowerCase();
                 //remove unnecessary words
-                sentance = sentance.replaceAll("relevant | a relevant document | also relevant | relevant items | relevant documents | are all relevant | will contain | a document must indicate", "");
+                //sentance = sentance.replaceAll("relevant | a relevant document | also relevant | relevant items | relevant documents | are all relevant | will contain | a document must indicate", "");
+                sentance = sentance.replaceAll("a relevant document identifies|a relevant document could|a relevant document may|a relevant document must|a relevant document will|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite", "");
                 relevantNarrative = relevantNarrative + " " + sentance;
 
             }
