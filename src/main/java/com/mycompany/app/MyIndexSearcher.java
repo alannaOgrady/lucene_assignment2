@@ -5,6 +5,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -54,16 +55,33 @@ public class MyIndexSearcher {
 		//query
 		for (int j = 0; j < queries.size(); j++) {
 		    System.out.println(j);
+            String querystr = "";
             Map<String, Float> boostMap = new HashMap<String, Float>();
             boostMap.put("title", 1.0f);
             boostMap.put("content", 7.5f);
 			MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
-			String querystr = /*queries.get(j).getQueryNarrative() +" "+*/ queries.get(j).getQueryDescription()
-					+ " " + queries.get(j).getQueryTitle();
+            querystr =  queries.get(j).getQueryDescription()
+                    + " " + queries.get(j).getQueryTitle();
+			/*if (!queries.get(j).getNonRelevantQueryNarrative().equals("")) {
+			    querystr += " OR NOT " + queries.get(j).getNonRelevantQueryNarrative();
+            }*/
+            /*else if (!queries.get(j).getRelevantQueryNarrative().equals("")) {
+                querystr +=  queries.get(j).getRelevantQueryNarrative();
+            }*/
+			//querystr = querystr.replaceAll("[,']", "");
 
 
 			Query q = parser.parse(QueryParser.escape(querystr));
-			//System.out.println("query " + q.toString());
+
+			////Boolean query
+            /*BooleanQuery.Builder finalQuery = new BooleanQuery.Builder();
+            BooleanQuery.Builder q1 = new BooleanQuery.Builder();
+            q1.add(new TermQuery(new Term("f1", "x")), BooleanClause.Occur.SHOULD);
+            q1.add(new TermQuery(new Term("f2", "x")), BooleanClause.Occur.SHOULD);
+            finalQuery.add(q1.build(), BooleanClause.Occur.MUST);
+            finalQuery.add(new TermQuery(new Term("f3", "y")), BooleanClause.Occur.MUST);
+            Query queryForSearching = finalQuery.build();*/
+			//System.out.println("query: " + q.toString());
 
 			IndexSearcher searcher = new IndexSearcher(reader);
 			//searcher.setSimilarity(iwConfig.getSimilarity());
@@ -83,7 +101,8 @@ public class MyIndexSearcher {
 
 			//     // 4. display results
 
-			for (int i = 0; i < 3000; ++i) {
+            int hitCount = Math.min(hits.length, 3000);
+			for (int i = 0; i < hitCount; ++i) {
 				int docId = hits[i].doc;
 				Document d = searcher.doc(docId);
 
@@ -109,7 +128,7 @@ public class MyIndexSearcher {
         BufferedReader br = new BufferedReader(new FileReader(file));
         String str = "";
         String[] tagArray = {"narr", "desc", "title", "num"};
-        String narr = "", desc = "", title = "", num = "";
+        String relNarr = "", nonRelNarr = "", desc = "", title = "", num = "";
 
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -125,7 +144,10 @@ public class MyIndexSearcher {
                     Element element = doc.select(tag).first();
                     doc.select(tag).remove();
                     if (tag.equals("narr")) {
-                        narr = element.text().substring(11, element.text().length());
+                        String narr = element.text().substring(11, element.text().length());
+                        ArrayList<String> narrative = getRelevantNarrative(narr);
+                        relNarr = narrative.get(0);
+                        nonRelNarr = narrative.get(1);
                         //System.out.println(narr);
                     }
                     else if (tag.equals("desc")) {
@@ -143,7 +165,7 @@ public class MyIndexSearcher {
 
                 }
 
-                queries.add(new MyQuery(Integer.parseInt(num), title, desc, narr));
+                queries.add(new MyQuery(Integer.parseInt(num), title, desc, relNarr, nonRelNarr));
                 //reset appended string
                 stringBuilder.setLength(0);
 
@@ -161,7 +183,31 @@ public class MyIndexSearcher {
 
     }
 
+    private ArrayList<String> getRelevantNarrative(String narrative) {
+        String relevantNarrative = "", nonRelevantNarrative = "";
+        String[] sentences = narrative.split("[;:,.]");
+        BreakIterator breakIterator = BreakIterator.getSentenceInstance();
+        breakIterator.setText(narrative);
+        for (String sentance : sentences) {
+            if (!sentance.contains("irrelevant") && !sentance.contains("not relevant")) {
+                sentance = sentance.toLowerCase();
+                //remove unnecessary words
+                sentance = sentance.replaceAll("relevant | a relevant document | also relevant | relevant items | relevant documents | are all relevant | will contain | a document must indicate", "");
+                relevantNarrative = relevantNarrative + " " + sentance;
 
+            }
+            else if (!sentance.contains("of interest")) {
+                sentance = sentance.toLowerCase();
+                //remove unnecessary words
+                sentance = sentance.replaceAll("not relevant | is not relevant | are not relevant | for business purposes are not relevant | are irrelevant | even though they might be decorative, are not relevant | without citing a specific case are not relevantare not relevant unless they also cite", "");
+                nonRelevantNarrative = nonRelevantNarrative + " " + sentance;
+            }
+        }
+        ArrayList<String> narrativeList = new ArrayList<String>();
+        narrativeList.add(relevantNarrative);
+        narrativeList.add(nonRelevantNarrative);
+        return narrativeList;
+    }
 
 
 }

@@ -4,14 +4,16 @@ public class MyQuery {
     private int queryNumber;
     private String title;
     private String description;
-    private String narrative;
+    private String relNarrative;
+    private String nonRelNarrative;
 
 
-    public MyQuery(int queryNum, String qTitle, String qDescription, String qNarrative) {
+    public MyQuery(int queryNum, String qTitle, String qDescription, String qRelNarrative, String qNonRelNarrative) {
         queryNumber = queryNum;
         title = qTitle;
         description = qDescription;
-        narrative = qNarrative;
+        relNarrative = qRelNarrative;
+        nonRelNarrative = qNonRelNarrative;
     }
 
     public int getQueryNum() {
@@ -26,7 +28,11 @@ public class MyQuery {
         return description;
     }
 
-    public String getQueryNarrative() {
-        return narrative;
+    public String getRelevantQueryNarrative() {
+        return relNarrative;
+    }
+
+    public String getNonRelevantQueryNarrative() {
+        return nonRelNarrative;
     }
 }
