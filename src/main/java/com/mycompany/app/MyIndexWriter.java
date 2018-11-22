@@ -4,6 +4,9 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Date;
+import java.util.Locale;
+import java.text.DateFormat;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -47,7 +50,7 @@ public class MyIndexWriter
 //
 //    must update
 //
-    public Directory index(Analyzer analyzer) throws IOException, ParseException {
+    public Directory index(Analyzer analyzer) throws IOException, ParseException, java.text.ParseException {
 
         Directory index = FSDirectory.open(Paths.get(indexPath));
 
@@ -77,7 +80,7 @@ public class MyIndexWriter
     }
 
 
-    private void parseLATimes(IndexWriter w) throws IOException{
+    private void parseLATimes(IndexWriter w) throws IOException, java.text.ParseException{
         System.out.println("Parsing LA Times...");
         File dir = new File("../lucene_assignment2/Assignment Two/latimes");
 
@@ -93,8 +96,10 @@ public class MyIndexWriter
             //parse
             BufferedReader br = new BufferedReader(new FileReader(file));
             String string = "", appendedString = "";
-            String[] tagArray = {"DOCNO", "HEADLINE", "BYLINE", "TEXT", "GRAPHIC"};
-            String docNo = "", headline = "", byline = "", text = "", graphic = "";
+            String[] tagArray = {"DOCNO", "DATE", "HEADLINE", "BYLINE", "TEXT", "GRAPHIC"};
+            String docNo = "",headline = "", byline = "", text = "", graphic = "";
+            Date finalDate;
+            DateFormat format = DateFormat.getDateInstance(DateFormat.LONG, Locale.ENGLISH);
 
             StringBuilder stringBuilder = new StringBuilder();
             while ((string = br.readLine()) != null) {
@@ -110,7 +115,27 @@ public class MyIndexWriter
                             if (tag.equals("DOCNO")) {
                                 //System.out.println(element.text());
                                 docNo = element.text();
-                            } else if (tag.equals("HEADLINE")) {
+                            } else if(tag.equals("DATE")) {
+                            	String date = element.text();
+                            	if(!date.equals("Correction Appended")) {
+                            		
+                            	
+                            	System.out.println(date);
+                            	int firstcomma = date.indexOf(',');
+                        		String firstDate = date.substring(0, firstcomma);
+                        		//System.out.print(firstDate);
+                        		String last = date.substring(firstcomma+1);
+                        		String lastremovecomma = last.substring(0,last.indexOf(','));
+                        		String stringfinalDate = firstDate +", "+ lastremovecomma;
+                        		finalDate = format.parse(stringfinalDate);
+                            	}
+                            	else {
+                            		finalDate = null;
+                            	}
+                       	
+                            }
+                            
+                            else if (tag.equals("HEADLINE")) {
                                 //System.out.println(element.text());
                                 headline = element.text();
                             } else if (tag.equals("BYLINE")) {
@@ -123,6 +148,7 @@ public class MyIndexWriter
                                 //System.out.println(element.text());
                                 //graphic = element.text();
                             }
+                           
                         }
                     }
                     stringBuilder.setLength(0);
@@ -339,8 +365,10 @@ public class MyIndexWriter
 //
     private void addDoc(IndexWriter w, String id, String title, String content) throws IOException {
         Document doc = new Document();
+        String date = "";
         // use a string field for author because we don't want it tokenized
         doc.add(new StringField("id", id, Field.Store.YES));
+        
         doc.add(new TextField("title", title, Field.Store.YES));
         doc.add(new TextField("content", content, Field.Store.YES));
 
