@@ -94,10 +94,12 @@ public class MyIndexSearcher {
 
             Query boostedTermQuery1 = new BoostQuery(q1, (float) 30.5);
             Query boostedTermQuery2 = new BoostQuery(q2, 30);
-            Query boostedTermQuery3 = new BoostQuery(q3, (float) 7.5);
             booleanQuery.add(boostedTermQuery1, BooleanClause.Occur.MUST);
             booleanQuery.add(boostedTermQuery2, BooleanClause.Occur.SHOULD);
-            booleanQuery.add(boostedTermQuery3, BooleanClause.Occur.SHOULD);
+            if (q3 != null) {
+                Query boostedTermQuery3 = new BoostQuery(q3, (float) 7.5);
+                booleanQuery.add(boostedTermQuery3, BooleanClause.Occur.SHOULD);
+            }
 
 			IndexSearcher searcher = new IndexSearcher(reader);
 			//searcher.setSimilarity(iwConfig.getSimilarity());
