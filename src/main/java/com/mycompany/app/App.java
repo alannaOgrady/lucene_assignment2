@@ -27,11 +27,12 @@ import org.apache.lucene.store.FSDirectory;
 
 public class App {
 	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException {
-		Analyzer analyzer = CustomAnalyzer.builder()
+		Analyzer analyzer = CustomAnalyzer.builder(Paths.get("../lucene_assignment2/src/main/java/com/mycompany/app/"))
 				.withTokenizer("standard")
 				.addTokenFilter("lowercase")
-				.addTokenFilter("stop")
-				//.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "stopword.txt", "format", "wordset")
+				//.addTokenFilter("stop")
+				.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "stopwords.txt", "format", "wordset")
+				.addTokenFilter(EnglishPossessiveFilterFactory.class)
 				.addTokenFilter(SnowballPorterFilterFactory.class)
 				.addTokenFilter(TrimFilterFactory.class)
 				.addTokenFilter("porterstem")
