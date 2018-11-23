@@ -26,7 +26,7 @@ import org.apache.lucene.store.FSDirectory;
 
 
 public class App {
-	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException {
+	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException, java.text.ParseException {
 		Analyzer analyzer = CustomAnalyzer.builder(Paths.get("../lucene_assignment2/src/main/java/com/mycompany/app/"))
 				.withTokenizer("standard")
 				.addTokenFilter("lowercase")
