@@ -62,12 +62,12 @@ public class MyIndexSearcher {
 			MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
             querystr =  queries.get(j).getQueryDescription()
                     + " " + queries.get(j).getQueryTitle();
-			/*if (!queries.get(j).getNonRelevantQueryNarrative().equals("")) {
-			    querystr += " OR NOT " + queries.get(j).getNonRelevantQueryNarrative();
-            }*/
 			if (!queries.get(j).getRelevantQueryNarrative().equals("")) {
                 querystr +=  " " + queries.get(j).getRelevantQueryNarrative();
             }
+           /* if (!queries.get(j).getNonRelevantQueryNarrative().equals("")) {
+                querystr += " OR  NOT " + queries.get(j).getNonRelevantQueryNarrative();
+            }*/
 			//querystr = querystr.replaceAll("[,']", "");
 
 
@@ -193,7 +193,7 @@ public class MyIndexSearcher {
                 sentance = sentance.toLowerCase();
                 //remove unnecessary words
                 //sentance = sentance.replaceAll("relevant | a relevant document | also relevant | relevant items | relevant documents | are all relevant | will contain | a document must indicate", "");
-                sentance = sentance.replaceAll("a relevant document identifies|a relevant document could|a relevant document may|a relevant document must|a relevant document will|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite", "");
+                sentance = sentance.replaceAll("a relevant document identifies|a relevant document could|a relevant document may include|a relevant document must|a relevant document will|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite|documents describing|documents pertaining|relevant when tied|must discuss|must include|must contain|must describe|must show", "");
                 relevantNarrative = relevantNarrative + " " + sentance;
 
             }
