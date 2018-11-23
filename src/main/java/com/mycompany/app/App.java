@@ -14,7 +14,7 @@ import org.apache.lucene.store.FSDirectory;
 
 
 public class App {
-	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException {
+	public static void main( String[] args ) throws Exception {
 		Analyzer analyzer = CustomAnalyzer.builder()
 				.withTokenizer("standard")
 				.addTokenFilter("lowercase")
@@ -26,9 +26,9 @@ public class App {
         MyIndexSearcher searcher = MyIndexSearcher.getInstance();
 		searcher.parseQuery();
 
-		Directory index = iw.index( analyzer);
+		//Directory index = iw.index( analyzer);
 		//use when dont want to parse and index, just want to use old index
-		//Directory index = iw.getTestIndex();
+		Directory index = iw.getTestIndex();
 		//String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
 		String fileName = "trec_res_BM25";
 

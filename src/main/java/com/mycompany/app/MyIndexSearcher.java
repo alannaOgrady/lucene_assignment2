@@ -20,6 +20,7 @@ import java.io.*;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MyIndexSearcher {
@@ -46,6 +47,7 @@ public class MyIndexSearcher {
 
         System.out.println("Searching collection...");
 		IndexReader reader = DirectoryReader.open(index);
+		boolean narrTest;
 
 
 
@@ -58,8 +60,33 @@ public class MyIndexSearcher {
             boostMap.put("title", 1.0f);
             boostMap.put("content", 7.5f);
 			MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
-			String querystr = /*queries.get(j).getQueryNarrative() +" "+*/ queries.get(j).getQueryDescription()
-					+ " " + queries.get(j).getQueryTitle();
+			
+			// Tyring to remove common words like 'relevant', 'irrelevant'
+			String narrative = queries.get(j).getQueryNarrative();
+			StringBuilder relevantNarrative = new StringBuilder();
+			StringBuilder irrelevantNarrative = new StringBuilder();
+			String[] narativeSplit = narrative.toLowerCase().split("\\.");
+			List<String> result = new ArrayList<String>();
+			for (String sentence : narativeSplit) {
+
+				if (!sentence.contains("not relevant") && !sentence.contains("irrelevant")) {
+
+					String re = sentence.replaceAll(
+							"a relevant document|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite",
+							"");
+					relevantNarrative.append(re);
+					narrTest = false;
+				} else {
+					String re = sentence.replaceAll("are also not relevant|are not relevant|are irrelevant|is not relevant", "");
+					irrelevantNarrative.append(re);
+					narrTest = true;
+				}
+			}
+			result.add(relevantNarrative.toString());
+			result.add(irrelevantNarrative.toString());
+			
+			String querystr = /*queries.get(j).getQueryNarrative() +" "+*/ 
+					 queries.get(j).getQueryTitle() + " " + queries.get(j).getQueryDescription()+ " " + result.get(0);
 
 
 			Query q = parser.parse(QueryParser.escape(querystr));
