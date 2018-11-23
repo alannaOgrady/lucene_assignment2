@@ -28,22 +28,23 @@ import org.apache.lucene.store.FSDirectory;
 public class App {
 	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException {
 		Analyzer analyzer = CustomAnalyzer.builder()
-				.withTokenizer(StandardTokenizerFactory.class)
-				.addTokenFilter(LowerCaseFilterFactory.class)
-				.addTokenFilter(StopFilterFactory.class)
+				.withTokenizer("standard")
+				.addTokenFilter("lowercase")
+				.addTokenFilter("stop")
+				//.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "stopword.txt", "format", "wordset")
 				.addTokenFilter(SnowballPorterFilterFactory.class)
 				.addTokenFilter(TrimFilterFactory.class)
-				.addTokenFilter(KeywordRepeatFilterFactory.class)
-				//.addTokenFilter(DictionaryCompoundWordTokenFilterFactory.class)
+				.addTokenFilter("porterstem")
 				.build();
+
 		MyIndexWriter iw = MyIndexWriter.getInstance();
 
         MyIndexSearcher searcher = MyIndexSearcher.getInstance();
 		searcher.parseQuery();
 
-		//Directory index = iw.index( analyzer);
+		Directory index = iw.index( analyzer);
 		//use when dont want to parse and index, just want to use old index
-		Directory index = iw.getTestIndex();
+		//Directory index = iw.getTestIndex();
 		//String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
 		String fileName = "trec_res_BM25";
 
