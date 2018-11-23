@@ -10,7 +10,9 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.Directory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -72,7 +74,7 @@ public class MyIndexSearcher {
 				if (!sentence.contains("not relevant") && !sentence.contains("irrelevant")) {
 
 					String re = sentence.replaceAll(
-							"a relevant document|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite",
+							"documents|a relevant document|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite",
 							"");
 					relevantNarrative.append(re);
 					narrTest = false;
@@ -89,19 +91,34 @@ public class MyIndexSearcher {
 					 queries.get(j).getQueryTitle() + " " + queries.get(j).getQueryDescription()+ " " + result.get(0);
 
 
-			Query q = parser.parse(QueryParser.escape(querystr));
+			Query q1 = parser.parse(QueryParser.escape(queries.get(j).getQueryTitle()));
+			Query q2 = parser.parse(QueryParser.escape(queries.get(j).getQueryDescription()));
+			Query q3 = parser.parse(QueryParser.escape(narrative));
+			
+			BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
+			
+			Query boostedTermQuery1 = new BoostQuery(q1, (float) 30.5);
+		    Query boostedTermQuery2 = new BoostQuery(q2, 30);
+		    Query boostedTermQuery3 = new BoostQuery(q3, (float) 7.5);
+		    booleanQuery.add(boostedTermQuery1, Occur.MUST);
+		    booleanQuery.add(boostedTermQuery2, Occur.SHOULD);
+		    booleanQuery.add(boostedTermQuery3, Occur.SHOULD);
 			//System.out.println("query " + q.toString());
 
 			IndexSearcher searcher = new IndexSearcher(reader);
 			//searcher.setSimilarity(iwConfig.getSimilarity());
+			
             searcher.setSimilarity(new BM25Similarity());
+            
+            
 
 			//to get all retrieved docs
 			TotalHitCountCollector collector = new TotalHitCountCollector();
-			searcher.search(q, collector);
+			//searcher.search(q, collector);
+			searcher.search(booleanQuery.build(), collector);
 
 			//use 1 if there is 0 hits
-			TopDocs docs = searcher.search(q, Math.max(1, collector.getTotalHits()));
+			TopDocs docs = searcher.search(booleanQuery.build(), Math.max(1, collector.getTotalHits()));
 			ScoreDoc[] hits = docs.scoreDocs;   //returns an array of retrieved documents
 			num++;
 
@@ -109,8 +126,15 @@ public class MyIndexSearcher {
 
 
 			//     // 4. display results
+			int limit =0;
+			if(hits.length > 3000) {
+				limit = 3000;
+			}
+			else {
+				limit = hits.length;
+			}
 
-			for (int i = 0; i < 3000; ++i) {
+			for (int i = 0; i < limit; ++i) {
 				int docId = hits[i].doc;
 				Document d = searcher.doc(docId);
 
