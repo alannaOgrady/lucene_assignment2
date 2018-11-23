@@ -1,3 +1,4 @@
+
 package com.mycompany.app;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -93,7 +94,14 @@ public class MyIndexSearcher {
 
 			Query q1 = parser.parse(QueryParser.escape(queries.get(j).getQueryTitle()));
 			Query q2 = parser.parse(QueryParser.escape(queries.get(j).getQueryDescription()));
-			Query q3 = parser.parse(QueryParser.escape(narrative));
+			Query q3;
+			if(result.get(0).equals("")) {
+				q3 = parser.parse(QueryParser.escape(narrative));
+			}
+			else {
+				q3 = parser.parse(QueryParser.escape(result.get(0)));
+			}
+			
 			
 			BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
 			
