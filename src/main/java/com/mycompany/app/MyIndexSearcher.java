@@ -60,28 +60,44 @@ public class MyIndexSearcher {
             boostMap.put("title", 1.0f);
             boostMap.put("content", 7.5f);
 			MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
-            querystr =  queries.get(j).getQueryDescription()
+            /*querystr =  queries.get(j).getQueryDescription()
                     + " " + queries.get(j).getQueryTitle();
 			if (!queries.get(j).getRelevantQueryNarrative().equals("")) {
                 querystr +=  " " + queries.get(j).getRelevantQueryNarrative();
-            }
+            }*/
            /* if (!queries.get(j).getNonRelevantQueryNarrative().equals("")) {
                 querystr += " OR  NOT " + queries.get(j).getNonRelevantQueryNarrative();
             }*/
 			//querystr = querystr.replaceAll("[,']", "");
 
 
-			Query q = parser.parse(QueryParser.escape(querystr));
+			//Query q = parser.parse(QueryParser.escape(querystr));
 
-			////Boolean query
-            /*BooleanQuery.Builder finalQuery = new BooleanQuery.Builder();
-            BooleanQuery.Builder q1 = new BooleanQuery.Builder();
-            q1.add(new TermQuery(new Term("f1", "x")), BooleanClause.Occur.SHOULD);
-            q1.add(new TermQuery(new Term("f2", "x")), BooleanClause.Occur.SHOULD);
-            finalQuery.add(q1.build(), BooleanClause.Occur.MUST);
-            finalQuery.add(new TermQuery(new Term("f3", "y")), BooleanClause.Occur.MUST);
-            Query queryForSearching = finalQuery.build();*/
-			//System.out.println("query: " + q.toString());
+            querystr =
+                    queries.get(j).getQueryTitle() + " " + queries.get(j).getQueryDescription()+ " " + queries.get(j).getRelevantQueryNarrative();;
+
+
+            Query q1 = parser.parse(QueryParser.escape(queries.get(j).getQueryTitle()));
+            Query q2 = parser.parse(QueryParser.escape(queries.get(j).getQueryDescription()));
+            Query q3 = null;
+            if(queries.get(j).getRelevantQueryNarrative().equals("")) {
+                //q3 = parser.parse(QueryParser.escape(narrative));
+                if (!queries.get(j).getNonRelevantQueryNarrative().equals(""))
+                    q3 = parser.parse(queries.get(j).getNonRelevantQueryNarrative());
+            }
+            else {
+                q3 = parser.parse(QueryParser.escape(queries.get(j).getRelevantQueryNarrative()));
+            }
+
+
+            BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
+
+            Query boostedTermQuery1 = new BoostQuery(q1, (float) 30.5);
+            Query boostedTermQuery2 = new BoostQuery(q2, 30);
+            Query boostedTermQuery3 = new BoostQuery(q3, (float) 7.5);
+            booleanQuery.add(boostedTermQuery1, BooleanClause.Occur.MUST);
+            booleanQuery.add(boostedTermQuery2, BooleanClause.Occur.SHOULD);
+            booleanQuery.add(boostedTermQuery3, BooleanClause.Occur.SHOULD);
 
 			IndexSearcher searcher = new IndexSearcher(reader);
 			//searcher.setSimilarity(iwConfig.getSimilarity());
@@ -89,10 +105,12 @@ public class MyIndexSearcher {
 
 			//to get all retrieved docs
 			TotalHitCountCollector collector = new TotalHitCountCollector();
-			searcher.search(q, collector);
+			//searcher.search(q, collector);
+            searcher.search(booleanQuery.build(), collector);
 
 			//use 1 if there is 0 hits
-			TopDocs docs = searcher.search(q, Math.max(1, collector.getTotalHits()));
+			//TopDocs docs = searcher.search(q, Math.max(1, collector.getTotalHits()));
+            TopDocs docs = searcher.search(booleanQuery.build(), Math.max(1, collector.getTotalHits()));
 			ScoreDoc[] hits = docs.scoreDocs;   //returns an array of retrieved documents
 			num++;
 
