@@ -22,6 +22,8 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MyIndexSearcher {
 
@@ -73,8 +75,7 @@ public class MyIndexSearcher {
 
 			//Query q = parser.parse(QueryParser.escape(querystr));
 
-            querystr =
-                    queries.get(j).getQueryTitle() + " " + queries.get(j).getQueryDescription()+ " " + queries.get(j).getRelevantQueryNarrative();;
+
 
 
             Query q1 = parser.parse(QueryParser.escape(queries.get(j).getQueryTitle()));
@@ -89,15 +90,14 @@ public class MyIndexSearcher {
                 q3 = parser.parse(QueryParser.escape(queries.get(j).getRelevantQueryNarrative()));
             }
 
-
             BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
 
-            Query boostedTermQuery1 = new BoostQuery(q1, (float) 30.5);
-            Query boostedTermQuery2 = new BoostQuery(q2, 30);
+            Query boostedTermQuery1 = new BoostQuery(q1, (float) 40.5);
+            Query boostedTermQuery2 = new BoostQuery(q2, 17);
             booleanQuery.add(boostedTermQuery1, BooleanClause.Occur.MUST);
             booleanQuery.add(boostedTermQuery2, BooleanClause.Occur.SHOULD);
             if (q3 != null) {
-                Query boostedTermQuery3 = new BoostQuery(q3, (float) 7.5);
+                Query boostedTermQuery3 = new BoostQuery(q3, (float) 11.5);
                 booleanQuery.add(boostedTermQuery3, BooleanClause.Occur.SHOULD);
             }
 
