@@ -12,6 +12,15 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.DFRSimilarity;
+import org.apache.lucene.search.similarities.LMDirichletSimilarity;
+import org.apache.lucene.search.similarities.MultiSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
+
+import org.apache.lucene.search.similarities.AfterEffectL;
+import org.apache.lucene.search.similarities.BasicModelIn;
+import org.apache.lucene.search.similarities.NormalizationH1;
 import org.apache.lucene.store.Directory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -100,10 +109,19 @@ public class MyIndexSearcher {
                 Query boostedTermQuery3 = new BoostQuery(q3, (float) 11.5);
                 booleanQuery.add(boostedTermQuery3, BooleanClause.Occur.SHOULD);
             }
+//            Similarity TFID
 
 			IndexSearcher searcher = new IndexSearcher(reader);
-			//searcher.setSimilarity(iwConfig.getSimilarity());
-            searcher.setSimilarity(new BM25Similarity());
+			
+			Similarity sims[] = {
+	                new ClassicSimilarity(),
+	                new LMDirichletSimilarity(500),
+	                new DFRSimilarity(new BasicModelIn(), new AfterEffectL(), new NormalizationH1()),
+	               };
+
+            searcher.setSimilarity(new MultiSimilarity(sims));
+          //searcher.setSimilarity(iwConfig.getSimilarity());
+			//searcher.setSimilarity(new BM25Similarity());
 
 			//to get all retrieved docs
 			TotalHitCountCollector collector = new TotalHitCountCollector();
