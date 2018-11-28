@@ -68,7 +68,7 @@ public class MyIndexSearcher {
 		    System.out.println(j);
             String querystr = "";
             Map<String, Float> boostMap = new HashMap<String, Float>();
-            boostMap.put("title", 1.0f);
+            boostMap.put("title", 0.7f);
             boostMap.put("content", 7.5f);
 			MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
             /*querystr =  queries.get(j).getQueryDescription()
@@ -84,14 +84,6 @@ public class MyIndexSearcher {
 
 			//Query q = parser.parse(QueryParser.escape(querystr));
 
-
-            Query country = null;
-
-            if (queries.get(j).getQueryTitle().contains("country") || queries.get(j).getQueryTitle().contains("countries")
-            || queries.get(j).getQueryDescription().contains("country") || queries.get(j).getQueryTitle().contains("countries")
-            || queries.get(j).getRelevantQueryNarrative().contains("country") || queries.get(j).getQueryTitle().contains("countries")) {
-                country = new TermQuery(new Term("countriesBoolean", "true"));
-            }
 
 
             Query titleQ = parser.parse(QueryParser.escape(queries.get(j).getQueryTitle()));
@@ -109,17 +101,12 @@ public class MyIndexSearcher {
 
             BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
 
-            Query boostedTitleQ = new BoostQuery(titleQ, (float) 40.5);
-            Query boostedDescQ = new BoostQuery(descQ, 17);
-            booleanQuery.add(boostedTitleQ, BooleanClause.Occur.MUST);
+            Query boostedTitleQ = new BoostQuery(titleQ, (float) 37);
+            Query boostedDescQ = new BoostQuery(descQ, 16);
+            booleanQuery.add(boostedTitleQ, BooleanClause.Occur.SHOULD);
             booleanQuery.add(boostedDescQ, BooleanClause.Occur.SHOULD);
-            //new
-            if (country != null) {
-                Query boostedQ = new BoostQuery(country, 80);
-                booleanQuery.add(country, BooleanClause.Occur.SHOULD);
-            }
             if (relNarrQ != null) {
-                Query boostedRelNarrQ = new BoostQuery(relNarrQ, (float) 11.5);
+                Query boostedRelNarrQ = new BoostQuery(relNarrQ, (float) 14);
                 booleanQuery.add(boostedRelNarrQ, BooleanClause.Occur.SHOULD);
             }
 //            Similarity TFID

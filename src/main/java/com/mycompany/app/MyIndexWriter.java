@@ -6,7 +6,6 @@ import java.text.ParseException;
 import java.util.*;
 import java.text.DateFormat;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -428,20 +427,7 @@ public class MyIndexWriter
 	//   must update
 	//
 	private void addDoc(IndexWriter w, String id, Date date, String title, String content) throws IOException {
-
-		List<String> countries = FileUtils.readLines(new File("../lucene_assignment2/src/main/java/com/mycompany/app/countries.txt"), "utf-8");
-
 		Document doc = new Document();
-
-		for(int i =0; i < countries.size(); i++)
-		{
-			if(title.contains(countries.get(i)) || content.contains(countries.get(i))) {
-				doc.add(new StringField("countriesBoolean", "true", Field.Store.YES));
-				break;
-			}
-			else
-				doc.add(new StringField("countriesBoolean", "false", Field.Store.YES));
-		}
 
 		// use a string field for author because we don't want it tokenized
 		doc.add(new StringField("id", id, Field.Store.YES));

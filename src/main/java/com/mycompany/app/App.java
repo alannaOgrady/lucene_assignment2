@@ -20,6 +20,7 @@ import org.apache.lucene.analysis.miscellaneous.KeywordRepeatFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.TrimFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilter;
 import org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilterFactory;
+import org.apache.lucene.analysis.ngram.NGramFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
@@ -32,8 +33,6 @@ import org.apache.lucene.store.FSDirectory;
 
 public class App {
 	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException, java.text.ParseException {
-		Map<String,String> params = new HashMap<>();
-
 
 		Analyzer analyzer = CustomAnalyzer.builder(Paths.get("../lucene_assignment2/src/main/java/com/mycompany/app/"))
 				.withTokenizer("standard")
