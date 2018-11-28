@@ -3,12 +3,10 @@ package com.mycompany.app;
 import java.io.*;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 import java.text.DateFormat;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -121,7 +119,7 @@ public class MyIndexWriter
 								if(!date.equals("Correction Appended")) {
 
 
-									System.out.println(date);
+									//System.out.println(date);
 									int firstcomma = date.indexOf(',');
 									String firstDate = date.substring(0, firstcomma);
 									//System.out.print(firstDate);
@@ -216,7 +214,7 @@ public class MyIndexWriter
 										//                            		   date = date.substring(1);
 									//                            	   }
 									String stringfinalDate = month + "/" + date + "/"+ year;
-									System.out.println(element.text() + "----->"+stringfinalDate);
+									//System.out.println(element.text() + "----->"+stringfinalDate);
 									finalDate = format.parse(stringfinalDate);
 
 								}
@@ -370,7 +368,7 @@ public class MyIndexWriter
 									rawDate = "March 07, 1994";
 								}
 								else {
-								System.out.println(element.text());
+								//System.out.println(element.text());
 
 								splitDate = element.text().split(" ");
 
@@ -378,7 +376,7 @@ public class MyIndexWriter
 								rawDate = splitDate[1]+" "+splitDate[0]+", "+splitDate[2];
 
 								}
-								System.out.println("RAW DATE: "+rawDate);
+								//System.out.println("RAW DATE: "+rawDate);
 								finalDate = format.parse(rawDate);
 
 //									String date = element.text();
@@ -396,7 +394,7 @@ public class MyIndexWriter
 
 
 
-								System.out.println(element.text() + "-----" + finalDate);
+								//System.out.println(element.text() + "-----" + finalDate);
 
 							}
 							else if (tag.equals("H3")) {
@@ -431,7 +429,20 @@ public class MyIndexWriter
 	//
 	private void addDoc(IndexWriter w, String id, Date date, String title, String content) throws IOException {
 
+		List<String> countries = FileUtils.readLines(new File("../lucene_assignment2/src/main/java/com/mycompany/app/countries.txt"), "utf-8");
+
 		Document doc = new Document();
+
+		for(int i =0; i < countries.size(); i++)
+		{
+			if(title.contains(countries.get(i)) || content.contains(countries.get(i))) {
+				doc.add(new StringField("countriesBoolean", "true", Field.Store.YES));
+				break;
+			}
+			else
+				doc.add(new StringField("countriesBoolean", "false", Field.Store.YES));
+		}
+
 		// use a string field for author because we don't want it tokenized
 		doc.add(new StringField("id", id, Field.Store.YES));
 		doc.add(new StringField("date", date.toString(),Field.Store.YES));

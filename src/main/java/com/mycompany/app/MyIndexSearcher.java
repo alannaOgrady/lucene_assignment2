@@ -85,29 +85,42 @@ public class MyIndexSearcher {
 			//Query q = parser.parse(QueryParser.escape(querystr));
 
 
+            Query country = null;
+
+            if (queries.get(j).getQueryTitle().contains("country") || queries.get(j).getQueryTitle().contains("countries")
+            || queries.get(j).getQueryDescription().contains("country") || queries.get(j).getQueryTitle().contains("countries")
+            || queries.get(j).getRelevantQueryNarrative().contains("country") || queries.get(j).getQueryTitle().contains("countries")) {
+                country = new TermQuery(new Term("countriesBoolean", "true"));
+            }
 
 
-            Query q1 = parser.parse(QueryParser.escape(queries.get(j).getQueryTitle()));
-            Query q2 = parser.parse(QueryParser.escape(queries.get(j).getQueryDescription()));
-            Query q3 = null;
+            Query titleQ = parser.parse(QueryParser.escape(queries.get(j).getQueryTitle()));
+            Query descQ = parser.parse(QueryParser.escape(queries.get(j).getQueryDescription()));
+            Query relNarrQ = null;
+
             if(queries.get(j).getRelevantQueryNarrative().equals("")) {
                 //q3 = parser.parse(QueryParser.escape(narrative));
                 if (!queries.get(j).getNonRelevantQueryNarrative().equals(""))
-                    q3 = parser.parse(queries.get(j).getNonRelevantQueryNarrative());
+                    relNarrQ = parser.parse(queries.get(j).getNonRelevantQueryNarrative());
             }
             else {
-                q3 = parser.parse(QueryParser.escape(queries.get(j).getRelevantQueryNarrative()));
+                relNarrQ = parser.parse(QueryParser.escape(queries.get(j).getRelevantQueryNarrative()));
             }
 
             BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
 
-            Query boostedTermQuery1 = new BoostQuery(q1, (float) 40.5);
-            Query boostedTermQuery2 = new BoostQuery(q2, 17);
-            booleanQuery.add(boostedTermQuery1, BooleanClause.Occur.MUST);
-            booleanQuery.add(boostedTermQuery2, BooleanClause.Occur.SHOULD);
-            if (q3 != null) {
-                Query boostedTermQuery3 = new BoostQuery(q3, (float) 11.5);
-                booleanQuery.add(boostedTermQuery3, BooleanClause.Occur.SHOULD);
+            Query boostedTitleQ = new BoostQuery(titleQ, (float) 40.5);
+            Query boostedDescQ = new BoostQuery(descQ, 17);
+            booleanQuery.add(boostedTitleQ, BooleanClause.Occur.MUST);
+            booleanQuery.add(boostedDescQ, BooleanClause.Occur.SHOULD);
+            //new
+            if (country != null) {
+                Query boostedQ = new BoostQuery(country, 80);
+                booleanQuery.add(country, BooleanClause.Occur.SHOULD);
+            }
+            if (relNarrQ != null) {
+                Query boostedRelNarrQ = new BoostQuery(relNarrQ, (float) 11.5);
+                booleanQuery.add(boostedRelNarrQ, BooleanClause.Occur.SHOULD);
             }
 //            Similarity TFID
 
@@ -139,7 +152,7 @@ public class MyIndexSearcher {
 
 			//     // 4. display results
 
-            int hitCount = Math.min(hits.length, 3000);
+            int hitCount = Math.min(hits.length, 1000);
 			for (int i = 0; i < hitCount; ++i) {
 				int docId = hits[i].doc;
 				Document d = searcher.doc(docId);

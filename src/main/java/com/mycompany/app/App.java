@@ -4,9 +4,12 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.compound.DictionaryCompoundWordTokenFilterFactory;
+import org.apache.lucene.analysis.core.FlattenGraphFilterFactory;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
@@ -15,6 +18,8 @@ import org.apache.lucene.analysis.en.KStemFilterFactory;
 import org.apache.lucene.analysis.en.PorterStemFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.KeywordRepeatFilterFactory;
 import org.apache.lucene.analysis.miscellaneous.TrimFilterFactory;
+import org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilter;
+import org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
@@ -27,11 +32,15 @@ import org.apache.lucene.store.FSDirectory;
 
 public class App {
 	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException, java.text.ParseException {
+		Map<String,String> params = new HashMap<>();
+
+
 		Analyzer analyzer = CustomAnalyzer.builder(Paths.get("../lucene_assignment2/src/main/java/com/mycompany/app/"))
 				.withTokenizer("standard")
 				.addTokenFilter("lowercase")
 				//.addTokenFilter("stop")
-				.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "stopwords.txt", "format", "wordset")
+				.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "newStopWords.txt", "format", "wordset")
+				//.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "stopwords.txt", "format", "wordset")
 				.addTokenFilter(EnglishPossessiveFilterFactory.class)
 				.addTokenFilter(SnowballPorterFilterFactory.class)
 				.addTokenFilter(TrimFilterFactory.class)
@@ -43,9 +52,9 @@ public class App {
         MyIndexSearcher searcher = MyIndexSearcher.getInstance();
 		searcher.parseQuery();
 
-		//Directory index = iw.index( analyzer);
+		Directory index = iw.index( analyzer);
 		//use when dont want to parse and index, just want to use old index
-		Directory index = iw.getTestIndex();
+		//Directory index = iw.getTestIndex();
 		//String fileName = "trec_res_" + iw.getConfig().getSimilarity().toString();
 		String fileName = "trec_res_BM25";
 
