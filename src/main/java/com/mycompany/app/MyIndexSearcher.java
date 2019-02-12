@@ -51,9 +51,7 @@ public class MyIndexSearcher {
         return instance;
     }
 
-//
-//    must update
-//
+
     public void search(Directory index, BufferedWriter writer, Analyzer analyzer) throws IOException, ParseException, QueryNodeException {
 
         System.out.println("Searching collection...");
@@ -71,18 +69,6 @@ public class MyIndexSearcher {
             boostMap.put("title", 0.7f);
             boostMap.put("content", 7.5f);
 			MultiFieldQueryParser parser = new MultiFieldQueryParser(new String[]{"content", "title"}, analyzer, boostMap);
-            /*querystr =  queries.get(j).getQueryDescription()
-                    + " " + queries.get(j).getQueryTitle();
-			if (!queries.get(j).getRelevantQueryNarrative().equals("")) {
-                querystr +=  " " + queries.get(j).getRelevantQueryNarrative();
-            }*/
-           /* if (!queries.get(j).getNonRelevantQueryNarrative().equals("")) {
-                querystr += " OR  NOT " + queries.get(j).getNonRelevantQueryNarrative();
-            }*/
-			//querystr = querystr.replaceAll("[,']", "");
-
-
-			//Query q = parser.parse(QueryParser.escape(querystr));
 
 
 
