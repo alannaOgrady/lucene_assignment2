@@ -14,8 +14,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.search.similarities.BM25Similarity;
-import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.jsoup.Jsoup;
@@ -54,7 +53,14 @@ public class MyIndexWriter
 
 		config = new IndexWriterConfig(analyzer);
 		config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-		config.setSimilarity(new BM25Similarity());
+		/*Similarity sims[] = {
+				new ClassicSimilarity(),
+				new LMDirichletSimilarity(500),
+				new DFRSimilarity(new BasicModelIn(), new AfterEffectL(), new NormalizationH1()),
+		};
+		config.setSimilarity(new MultiSimilarity(sims));*/
+		config.setSimilarity(new LMDirichletSimilarity(500));
+		//config.setSimilarity(new BM25Similarity());
 		System.out.println("Indexing with BM25");
 		/*else if (iteration == 1) {
             config.setSimilarity(new ClassicSimilarity());

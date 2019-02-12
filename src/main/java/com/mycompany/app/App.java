@@ -12,17 +12,16 @@ import org.apache.lucene.analysis.compound.DictionaryCompoundWordTokenFilterFact
 import org.apache.lucene.analysis.core.FlattenGraphFilterFactory;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.en.EnglishPossessiveFilterFactory;
 import org.apache.lucene.analysis.en.KStemFilterFactory;
 import org.apache.lucene.analysis.en.PorterStemFilterFactory;
-import org.apache.lucene.analysis.miscellaneous.KeywordRepeatFilterFactory;
-import org.apache.lucene.analysis.miscellaneous.TrimFilterFactory;
-import org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilter;
-import org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilterFactory;
+import org.apache.lucene.analysis.miscellaneous.*;
 import org.apache.lucene.analysis.ngram.NGramFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -30,20 +29,20 @@ import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import javax.tools.StandardJavaFileManager;
+
 
 public class App {
 	public static void main( String[] args ) throws IOException, ParseException, QueryNodeException, java.text.ParseException {
 
 		Analyzer analyzer = CustomAnalyzer.builder(Paths.get("../lucene_assignment2/src/main/java/com/mycompany/app/"))
 				.withTokenizer("standard")
+				.addTokenFilter(StandardFilterFactory.class)
 				.addTokenFilter("lowercase")
-				//.addTokenFilter("stop")
 				.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "newStopWords.txt", "format", "wordset")
-				//.addTokenFilter(StopFilterFactory.class, "ignoreCase", "false", "words", "stopwords.txt", "format", "wordset")
 				.addTokenFilter(EnglishPossessiveFilterFactory.class)
 				.addTokenFilter(SnowballPorterFilterFactory.class)
 				.addTokenFilter(TrimFilterFactory.class)
-				.addTokenFilter("porterstem")
 				.build();
 
 		MyIndexWriter iw = MyIndexWriter.getInstance();

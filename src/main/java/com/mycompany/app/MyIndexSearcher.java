@@ -113,13 +113,14 @@ public class MyIndexSearcher {
 
 			IndexSearcher searcher = new IndexSearcher(reader);
 			
-			Similarity sims[] = {
+			/*Similarity sims[] = {
 	                new ClassicSimilarity(),
 	                new LMDirichletSimilarity(500),
 	                new DFRSimilarity(new BasicModelIn(), new AfterEffectL(), new NormalizationH1()),
 	               };
 
-            searcher.setSimilarity(new MultiSimilarity(sims));
+            searcher.setSimilarity(new MultiSimilarity(sims));*/
+			searcher.setSimilarity(new LMDirichletSimilarity(500));
           //searcher.setSimilarity(iwConfig.getSimilarity());
 			//searcher.setSimilarity(new BM25Similarity());
 
